@@ -1,0 +1,21 @@
+{
+  "id": "rajucode/uncertainty-pneumothorax-segmentation",
+  "title": "Uncertainty Pneumothorax Segmentation",
+  "code_file": "train_uncertainty_pneumothorax.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "jesperdramsch/siim-acr-pneumothorax-segmentation-data",
+    "rajucode/siim-acr-processed-splits"
+  ],
+  "competition_sources": [
+    "siim-acr-pneumothorax-segmentation"
+  ],
+  "kernel_sources": [],
+  "model_sources": []
+}
