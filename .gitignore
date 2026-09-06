@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints
+
+# PyTorch & Weights
+*.pt
+*.pth
+*.ckpt
+
+# Data & Large Files
+data/raw/
+data/processed/*.h5
+data/processed/cache_512x512/
+*.dcm
+*.zip
+*.tar.gz
+
+# Results & Logs
+results/
+logs/
+wandb/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp

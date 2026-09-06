@@ -1,0 +1,25 @@
+experiment_name: "EXP-03_deterministic_baseline"
+seed: 42
+
+data:
+  image_size: 512
+  batch_size: 16
+  num_workers: 4
+  splits_csv: "data/processed/patient_splits.csv"
+  cache_dir: "data/processed/cache_512x512/"
+
+model:
+  architecture: "unet_resnet34"
+  in_channels: 3
+  num_classes: 1
+  pretrained: true
+  dropout_rate: 0.0
+
+training:
+  epochs: 35
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  bce_weight: 0.5
+  dice_weight: 0.5
+  mixed_precision: true
+  checkpoint_dir: "checkpoints/baseline/"
