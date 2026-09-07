@@ -1,0 +1,138 @@
+Installing required medical imaging libraries...
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 154.8/154.8 kB 10.4 MB/s eta 0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 154.8/154.8 kB 10.4 MB/s eta 0:00:00
+PyTorch Version: 2.10.0+cu128
+CUDA Available: True
+Device: Tesla T4
+Total GPU VRAM: 15.64 GB
+Seeding initialized to 42.
+Indexing DICOM files in /kaggle/input...
+Indexed 15294 unique DICOM radiographs.
+Loaded splits from: /kaggle/input/datasets/rajucode/siim-acr-processed-splits/patient_splits.csv
+Total records: 10675
+Folds distribution:
+Fold
+0       1708
+1       1708
+2       1708
+3       1708
+4       1708
+test    2135
+Name: count, dtype: int64
+Successfully matched DICOM files: 10675 / 10675
+Verification: sample mask shape=(1024, 1024), sum=0
+Train set: 6832 images (22.3% positive)
+Validation set: 1708 images (22.4% positive)
+Test Holdout set: 2135 images (22.3% positive)
+LEAKAGE PROOF VERIFIED: Exactly 0 overlapping patients between train/val and test.
+Model architecture and CombinedBCEDiceLoss verified.
+DeepEnsemble container ready.
+
+==========================================
+Training model_seed42 with Seed 42
+==========================================
+Epoch 01/10 [210s] - Train Loss: 0.4987 | Val DSC_all: 0.2984 | Val DSC_pos: 0.4678
+  --> Saved new best checkpoint to model_seed42.pt (DSC_pos: 0.4678)
+Epoch 02/10 [210s] - Train Loss: 0.4517 | Val DSC_all: 0.5765 | Val DSC_pos: 0.1485
+Epoch 03/10 [209s] - Train Loss: 0.4397 | Val DSC_all: 0.6924 | Val DSC_pos: 0.0643
+Epoch 04/10 [209s] - Train Loss: 0.4331 | Val DSC_all: 0.0787 | Val DSC_pos: 0.0405
+Epoch 05/10 [210s] - Train Loss: 0.4286 | Val DSC_all: 0.1759 | Val DSC_pos: 0.1214
+Epoch 06/10 [210s] - Train Loss: 0.4282 | Val DSC_all: 0.1421 | Val DSC_pos: 0.4390
+Epoch 07/10 [210s] - Train Loss: 0.4264 | Val DSC_all: 0.2037 | Val DSC_pos: 0.4028
+Epoch 08/10 [210s] - Train Loss: 0.4253 | Val DSC_all: 0.1547 | Val DSC_pos: 0.4221
+Epoch 09/10 [210s] - Train Loss: 0.4228 | Val DSC_all: 0.2059 | Val DSC_pos: 0.3264
+Epoch 10/10 [211s] - Train Loss: 0.4189 | Val DSC_all: 0.2309 | Val DSC_pos: 0.3649
+
+==========================================
+Training model_seed43 with Seed 43
+==========================================
+Epoch 01/10 [211s] - Train Loss: 0.4879 | Val DSC_all: 0.7763 | Val DSC_pos: 0.0000
+  --> Saved new best checkpoint to model_seed43.pt (DSC_pos: 0.0000)
+Epoch 02/10 [210s] - Train Loss: 0.4519 | Val DSC_all: 0.1962 | Val DSC_pos: 0.2671
+  --> Saved new best checkpoint to model_seed43.pt (DSC_pos: 0.2671)
+Epoch 03/10 [210s] - Train Loss: 0.4431 | Val DSC_all: 0.7735 | Val DSC_pos: 0.0002
+Epoch 04/10 [210s] - Train Loss: 0.4382 | Val DSC_all: 0.1891 | Val DSC_pos: 0.5131
+  --> Saved new best checkpoint to model_seed43.pt (DSC_pos: 0.5131)
+Epoch 05/10 [211s] - Train Loss: 0.4335 | Val DSC_all: 0.2513 | Val DSC_pos: 0.4089
+Epoch 06/10 [210s] - Train Loss: 0.4294 | Val DSC_all: 0.2374 | Val DSC_pos: 0.4439
+Epoch 07/10 [211s] - Train Loss: 0.4284 | Val DSC_all: 0.1021 | Val DSC_pos: 0.2654
+Epoch 08/10 [210s] - Train Loss: 0.4271 | Val DSC_all: 0.1148 | Val DSC_pos: 0.2935
+Epoch 09/10 [210s] - Train Loss: 0.4228 | Val DSC_all: 0.1215 | Val DSC_pos: 0.3390
+Epoch 10/10 [211s] - Train Loss: 0.4241 | Val DSC_all: 0.1284 | Val DSC_pos: 0.3700
+
+==========================================
+Training model_seed44 with Seed 44
+==========================================
+Epoch 01/10 [211s] - Train Loss: 0.4780 | Val DSC_all: 0.7763 | Val DSC_pos: 0.0000
+  --> Saved new best checkpoint to model_seed44.pt (DSC_pos: 0.0000)
+Epoch 02/10 [210s] - Train Loss: 0.4401 | Val DSC_all: 0.7278 | Val DSC_pos: 0.0000
+Epoch 03/10 [210s] - Train Loss: 0.4396 | Val DSC_all: 0.0723 | Val DSC_pos: 0.1009
+  --> Saved new best checkpoint to model_seed44.pt (DSC_pos: 0.1009)
+Epoch 04/10 [210s] - Train Loss: 0.4348 | Val DSC_all: 0.2561 | Val DSC_pos: 0.2602
+  --> Saved new best checkpoint to model_seed44.pt (DSC_pos: 0.2602)
+Epoch 05/10 [210s] - Train Loss: 0.4309 | Val DSC_all: 0.4802 | Val DSC_pos: 0.2413
+Epoch 06/10 [210s] - Train Loss: 0.4288 | Val DSC_all: 0.4314 | Val DSC_pos: 0.3318
+  --> Saved new best checkpoint to model_seed44.pt (DSC_pos: 0.3318)
+Epoch 07/10 [211s] - Train Loss: 0.4242 | Val DSC_all: 0.2948 | Val DSC_pos: 0.2974
+Epoch 08/10 [211s] - Train Loss: 0.4208 | Val DSC_all: 0.4378 | Val DSC_pos: 0.2898
+Epoch 09/10 [211s] - Train Loss: 0.4208 | Val DSC_all: 0.4182 | Val DSC_pos: 0.3150
+Epoch 10/10 [210s] - Train Loss: 0.4158 | Val DSC_all: 0.4510 | Val DSC_pos: 0.3202
+
+All 3 models trained and DeepEnsemble assembled successfully.
+Executing test holdout evaluation across 2135 cases...
+Processed 250/2135 cases (2.1 min elapsed)
+Processed 500/2135 cases (4.1 min elapsed)
+Processed 750/2135 cases (6.2 min elapsed)
+Processed 1000/2135 cases (8.3 min elapsed)
+Processed 1250/2135 cases (10.3 min elapsed)
+Processed 1500/2135 cases (12.4 min elapsed)
+Processed 1750/2135 cases (14.5 min elapsed)
+Processed 2000/2135 cases (16.6 min elapsed)
+Processed 2135/2135 cases (17.7 min elapsed)
+Test predictions saved to test_predictions.csv
+
+================================================================================
+DISAGGREGATED SEGMENTATION EVALUATION (TEST HOLDOUT, N=2,135)
+================================================================================
+Metric                        | Deterministic (EXP-03) | MC Dropout (EXP-04) | Deep Ensemble (EXP-05)
+--------------------------------------------------------------------------------
+DSC_pos (Positive Cases Only) | 0.6071 +/- 0.2244      | 0.6094 +/- 0.2243  | 0.5864 +/- 0.2578
+DSC_all (Overall Cohort)      | 0.1368 +/- 0.2759      | 0.1363 +/- 0.2755  | 0.1766 +/- 0.3259
+IoU (Intersection-over-Union) | 0.4726 +/- 0.2320      | 0.4754 +/- 0.2344  | 0.4603 +/- 0.2540
+Sensitivity (Recall)          | 0.6906 +/- 0.3069      | 0.6824 +/- 0.3117  | 0.5834 +/- 0.3366
+Specificity                   | 0.9999 +/- 0.0002      | 0.9999 +/- 0.0001  | 0.9999 +/- 0.0000
+AUROC-ED (Error Detection)    | 0.9900                 | 0.5000             | 0.9617
+ESCE (Calibration Error)      | 0.0012                 | 0.0012             | 0.0006
+Brier Score                   | 0.0001                 | 0.0001             | 0.0001
+================================================================================
+Hypothesis H1 (Ens DSC_pos > Det DSC_pos): p-value = 9.9744e-01 (Significant: False)
+Hypothesis H2 (MC AUROC-ED > Det AUROC-ED): p-value = nan (Significant: False)
+Hypothesis H3 (Ens AUROC-ED > Det AUROC-ED): p-value = nan (Significant: False)
+
+================================================================================
+SELECTIVE PREDICTION AND RISK-COVERAGE EVALUATION (EXP-08)
+================================================================================
+Strategy              | AURC (v) | DSC at 100% Cov | DSC at 90% Cov | DSC at 80% Cov | DSC at 70% Cov
+--------------------------------------------------------------------------------
+Random Referral       | 0.8648   | 0.1368          | 0.1367         | 0.1379         | 0.1382
+Deterministic Entropy | 0.8686   | 0.1368          | 0.1383         | 0.1391         | 0.1348
+MC Dropout Variance   | 0.8655   | 0.1363          | 0.1358         | 0.1360         | 0.1351
+Deep Ensemble MutInfo | 0.8531   | 0.1766          | 0.1733         | 0.1548         | 0.1493
+================================================================================
+Risk-coverage curves saved to risk_coverage_curves.csv
+
+================================================================================
+ANATOMICAL SUBGROUP ANALYSIS: AP (837 cases) vs PA (1298 cases)
+================================================================================
+Subgroup | Model             | DSC_pos           | DSC_all           | AUROC-ED  | Case Uncertainty
+--------------------------------------------------------------------------------
+AP       | Deterministic     | 0.6049            | 0.1279            | 0.9888    | 0.3444
+AP       | MC Dropout        | 0.6158            | 0.1266            | 0.5000    | 0.0000
+AP       | Deep Ensemble     | 0.5629            | 0.1551            | 0.9645    | 0.0349
+--------------------------------------------------------------------------------
+PA       | Deterministic     | 0.6083            | 0.1425            | 0.9909    | 0.3380
+PA       | MC Dropout        | 0.6057            | 0.1426            | 0.5000    | 0.0000
+PA       | Deep Ensemble     | 0.5997            | 0.1905            | 0.9599    | 0.0360
+================================================================================
+Saved: fig1_risk_coverage_curves.png
+Saved: fig2_calibration_curves.png

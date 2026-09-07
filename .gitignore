@@ -25,7 +25,10 @@ data/processed/cache_512x512/
 *.tar.gz
 
 # Results & Logs
-results/
+results/checkpoints/
+results/*.pt
+results/test_predictions.csv
+results/*.log
 logs/
 wandb/
 .pytest_cache/

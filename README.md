@@ -96,3 +96,57 @@ pip install -r requirements.txt
 # 2. Run automated test suite to verify math and pipeline integrity
 pytest tests/ -v
 ```
+
+---
+
+## 📊 Empirical Results (Test Holdout, $N=2,135$)
+
+All experiments (EXP-01 through EXP-10) were executed using the zero-leakage test holdout ($2,135$ radiographs, $22.3\%$ positive prevalence):
+
+### Table 1: Primary Experimental Benchmark
+| Evaluation Metric | Deterministic Baseline (EXP-03) | MC Dropout ($T=20$) (EXP-04) | Deep Ensemble ($M=3$) (EXP-05) |
+| :--- | :---: | :---: | :---: |
+| **$\text{DSC}_{\text{pos}}$** (Positive Cases) | 0.6071 $\pm$ 0.2244 | **0.6094 $\pm$ 0.2243** | 0.5864 $\pm$ 0.2578 |
+| **$\text{DSC}_{\text{all}}$** (Overall Cohort) | 0.1368 $\pm$ 0.2759 | 0.1363 $\pm$ 0.2755 | **0.1766 $\pm$ 0.3259** |
+| **$\text{IoU}_{\text{pos}}$** (Jaccard Index) | 0.4726 $\pm$ 0.2320 | **0.4754 $\pm$ 0.2344** | 0.4603 $\pm$ 0.2540 |
+| **Sensitivity** (Recall) | **0.6906 $\pm$ 0.3069** | 0.6824 $\pm$ 0.3117 | 0.5834 $\pm$ 0.3366 |
+| **Specificity** | 0.9999 $\pm$ 0.0002 | 0.9999 $\pm$ 0.0001 | **0.9999 $\pm$ 0.0000** |
+| **AUROC-ED** (Error Detection) $\uparrow$ | **0.9900** | 0.5000 | 0.9617 |
+| **ESCE** (Calibration Error) $\downarrow$ | 0.0012 | 0.0012 | **0.0006** (50% reduction) |
+| **Brier Score** $\downarrow$ | 0.0001 | 0.0001 | 0.0001 |
+| **AURC** (Risk-Coverage) $\downarrow$ | 0.8686 | 0.8655 | **0.8531** (Optimal triage) |
+
+### Table 2: Clinical Selective Prediction & Referral Simulation (EXP-08)
+| Strategy | AURC $\downarrow$ | Retained Dice @ 100% | Retained Dice @ 90% | Retained Dice @ 80% | Retained Dice @ 70% |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Random Referral** | 0.8648 | 0.1368 | 0.1367 | 0.1379 | 0.1382 |
+| **Deterministic Entropy** | 0.8686 | 0.1368 | 0.1383 | 0.1391 | 0.1348 |
+| **MC Dropout Variance** | 0.8655 | 0.1363 | 0.1358 | 0.1360 | 0.1351 |
+| **Deep Ensemble MutInfo** | **0.8531** | **0.1766** | **0.1733** | **0.1548** | **0.1493** |
+
+### Generated Publication Visualizations
+- **[Figure 1: Risk-Coverage Pareto Curves](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig1_risk_coverage_curves.png)**
+- **[Figure 2: Segmentation Calibration Reliability Diagrams](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig2_calibration_curves.png)**
+- **[Figure 3: AUROC Error Detection ROC Curves](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig3_auroc_error_detection.png)**
+- **[Figure 4: AP vs. PA Subgroup Performance](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig4_ap_vs_pa_subgroups.png)**
+- **[Figure 5: Qualitative Multi-Panel Uncertainty & Archetypes](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig5_qualitative_uncertainty_maps.png)**
+
+---
+
+## 🌐 Interactive Web Application (GitHub Pages)
+
+A static, pure HTML5, CSS, and JavaScript interactive web application is hosted under `docs/`:
+- **Live GitHub Pages URL**: [https://raju-sah.github.io/pneumothorax-segmentation/](https://raju-sah.github.io/pneumothorax-segmentation/)
+- **Clinical Triage Studio**: Multi-layer canvas with interactive opacity, crosshairs, and pixel probe HUD.
+- **Selective Prediction Simulator**: Interactive coverage slider $\Phi$ with real-time Pareto calculations and SVG risk curves.
+- **Scientific Lightbox Gallery & Benchmark Explorer**: Interactive tabs for Tables 1-3 and high-resolution figures.
+
+---
+
+## 📄 Academic Paper Manuscript
+
+The complete conference manuscript formatted for MIDL/MICCAI is available in the [`paper/`](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/paper/) directory:
+- **`paper/main.tex`**: Camera-ready LaTeX document with all empirical metrics, tables, and figures embedded.
+- **`paper/references.bib`**: BibTeX bibliography with 15 relevant medical AI and uncertainty quantification citations.
+
+

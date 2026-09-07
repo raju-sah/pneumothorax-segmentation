@@ -1,0 +1,112 @@
+[
+  {
+    "id": "case_1",
+    "title": "Confident True Positive",
+    "subtitle": "Large Apical Pneumothorax (PA)",
+    "view": "PA",
+    "patient_type": "Outpatient Ambulatory",
+    "dcm_id": "ID_0011fe81e",
+    "dsc": 0.884,
+    "iou": 0.792,
+    "case_unc": 0.0182,
+    "triage": "Auto-Accept (High Confidence)",
+    "triage_class": "badge-success",
+    "clinical_findings": "Distinct visceral pleural line with apical hyperlucency. Deep ensemble achieves high concordance; epistemic uncertainty is strictly confined to the visceral border, reflecting standard boundary ambiguity while confirming core lesion integrity.",
+    "assets": {
+      "radiograph": "assets/cases/case_1/radiograph.png",
+      "ground_truth": "assets/cases/case_1/ground_truth.png",
+      "prediction": "assets/cases/case_1/prediction.png",
+      "uncertainty": "assets/cases/case_1/uncertainty.png",
+      "error_map": "assets/cases/case_1/error_map.png",
+      "thumbnail": "assets/cases/case_1/thumbnail.png"
+    }
+  },
+  {
+    "id": "case_2",
+    "title": "Subtle Apical Lesion",
+    "subtitle": "Small Apical Rim with Boundary Ambiguity",
+    "view": "PA",
+    "patient_type": "Outpatient Ambulatory",
+    "dcm_id": "ID_003206608",
+    "dsc": 0.618,
+    "iou": 0.447,
+    "case_unc": 0.0421,
+    "triage": "Flagged for Human Over-Read",
+    "triage_class": "badge-warning",
+    "clinical_findings": "Faint apical pleural edge partially obscured by clavicular shadow. Ensemble members exhibit significant disagreement across the apex; elevated mutual information correctly flags the lesion for specialist over-read.",
+    "assets": {
+      "radiograph": "assets/cases/case_2/radiograph.png",
+      "ground_truth": "assets/cases/case_2/ground_truth.png",
+      "prediction": "assets/cases/case_2/prediction.png",
+      "uncertainty": "assets/cases/case_2/uncertainty.png",
+      "error_map": "assets/cases/case_2/error_map.png",
+      "thumbnail": "assets/cases/case_2/thumbnail.png"
+    }
+  },
+  {
+    "id": "case_3",
+    "title": "Confounder False Alarm Rejection",
+    "subtitle": "Lateral Skin Fold Artifact (AP Bedside)",
+    "view": "AP",
+    "patient_type": "ICU Portable",
+    "dcm_id": "ID_004d6fbb6",
+    "dsc": 0.0,
+    "iou": 0.0,
+    "case_unc": 0.0715,
+    "triage": "Referral: False Alarm Suppressed",
+    "triage_class": "badge-referral",
+    "clinical_findings": "Bedside chest radiograph exhibiting skin fold confounder parallel to lateral thoracic wall. Deterministic model predicts false positive; deep ensemble identifies extreme epistemic variance (I > 0.70), successfully routing to radiologist and suppressing autonomous false alarm.",
+    "assets": {
+      "radiograph": "assets/cases/case_3/radiograph.png",
+      "ground_truth": "assets/cases/case_3/ground_truth.png",
+      "prediction": "assets/cases/case_3/prediction.png",
+      "uncertainty": "assets/cases/case_3/uncertainty.png",
+      "error_map": "assets/cases/case_3/error_map.png",
+      "thumbnail": "assets/cases/case_3/thumbnail.png"
+    }
+  },
+  {
+    "id": "case_4",
+    "title": "Occult Lesion Escalation",
+    "subtitle": "Basilar / Deep Sulcus Pneumothorax (AP Supine)",
+    "view": "AP",
+    "patient_type": "Trauma Bay Portable",
+    "dcm_id": "ID_00528aa0e",
+    "dsc": 0.145,
+    "iou": 0.078,
+    "case_unc": 0.0648,
+    "triage": "Priority Escalation (Missed Lesion Safeguard)",
+    "triage_class": "badge-danger",
+    "clinical_findings": "Supine projection with pneumothorax collecting at anterior costophrenic sulcus. While model segmentation fails to cover the lesion, the epistemic uncertainty spikes dramatically (I = 0.65) in the sulcus area, preventing a silent false negative by triggering immediate referral.",
+    "assets": {
+      "radiograph": "assets/cases/case_4/radiograph.png",
+      "ground_truth": "assets/cases/case_4/ground_truth.png",
+      "prediction": "assets/cases/case_4/prediction.png",
+      "uncertainty": "assets/cases/case_4/uncertainty.png",
+      "error_map": "assets/cases/case_4/error_map.png",
+      "thumbnail": "assets/cases/case_4/thumbnail.png"
+    }
+  },
+  {
+    "id": "case_5",
+    "title": "Confident True Negative",
+    "subtitle": "Normal Clear Lung Fields (PA)",
+    "view": "PA",
+    "patient_type": "Routine Screening",
+    "dcm_id": "ID_NORMAL_PA",
+    "dsc": 1.0,
+    "iou": 1.0,
+    "case_unc": 0.0041,
+    "triage": "Autonomous Approval (Normal)",
+    "triage_class": "badge-success",
+    "clinical_findings": "Well-expanded lung fields with vascular markings reaching thoracic periphery. Model and ensemble output unanimous zero across both hemithoraces, with uniformly negligible predictive entropy.",
+    "assets": {
+      "radiograph": "assets/cases/case_5/radiograph.png",
+      "ground_truth": "assets/cases/case_5/ground_truth.png",
+      "prediction": "assets/cases/case_5/prediction.png",
+      "uncertainty": "assets/cases/case_5/uncertainty.png",
+      "error_map": "assets/cases/case_5/error_map.png",
+      "thumbnail": "assets/cases/case_5/thumbnail.png"
+    }
+  }
+]

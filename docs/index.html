@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Uncertainty-Aware Pneumothorax Segmentation & Selective Prediction in Chest Radiographs. Empirical research benchmark and interactive clinical triage studio on 2,135 SIIM-ACR holdout patients.">
+  <title>DeepRisk-CXR | Uncertainty-Aware Pneumothorax Segmentation</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for clinical UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="site-header" id="site-header">
+    <div class="nav-container">
+      <a href="#hero" class="brand-logo" id="brand-logo">
+        <span class="logo-pulse"><i class="fa-solid fa-lungs-virus"></i></span>
+        <span class="logo-text">DeepRisk<span class="brand-accent">-CXR</span></span>
+      </a>
+      <nav class="main-nav" id="main-nav">
+        <a href="#triage-studio" class="nav-link"><i class="fa-solid fa-microscope"></i> Triage Studio</a>
+        <a href="#simulator" class="nav-link"><i class="fa-solid fa-sliders"></i> Selective Prediction</a>
+        <a href="#benchmark" class="nav-link"><i class="fa-solid fa-chart-line"></i> Benchmark</a>
+        <a href="#gallery" class="nav-link"><i class="fa-solid fa-images"></i> Figures</a>
+        <a href="#paper-section" class="nav-link"><i class="fa-solid fa-file-lines"></i> Paper</a>
+      </nav>
+      <div class="header-actions">
+        <a href="https://github.com/raju-sah/pneumothorax-segmentation" target="_blank" rel="noopener" class="btn-github" id="btn-github-nav">
+          <i class="fa-brands fa-github"></i> <span>Repository</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+    <div class="container hero-container">
+      <div class="hero-pill-badge" id="hero-badge">
+        <span class="status-indicator"></span>
+        <span>SIIM-ACR Benchmark • 2,135 Patient-Isolated Test Cohort • Zero Data Leakage</span>
+      </div>
+      <h1 class="hero-title">
+        Uncertainty-Aware Pneumothorax Segmentation &amp; <span class="gradient-text">Selective Prediction</span>
+      </h1>
+      <p class="hero-subtitle">
+        Bridging high-risk deep learning segmentation and radiologist workflow through dense epistemic uncertainty estimation, error detection, and clinical referral on holdout chest radiographs.
+      </p>
+
+      <!-- Key Quantitative Stat Chips -->
+      <div class="hero-stats-grid" id="hero-stats-grid">
+        <div class="stat-card">
+          <div class="stat-value gradient-text-cyan">0.8531</div>
+          <div class="stat-label">Optimal AURC (Deep Ensemble)</div>
+          <div class="stat-detail">Superior selective triage frontier</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gradient-text-emerald">50.0%</div>
+          <div class="stat-label">ESCE Calibration Reduction</div>
+          <div class="stat-detail">0.0006 vs 0.0012 baseline</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gradient-text-amber">+29.1%</div>
+          <div class="stat-label">Cohort DSC Gain</div>
+          <div class="stat-detail">0.1766 vs 0.1368 deterministic</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gradient-text-violet">0.9617</div>
+          <div class="stat-label">AUROC-ED Error Detection</div>
+          <div class="stat-detail">Mutual information discriminator</div>
+        </div>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="#triage-studio" class="btn btn-primary" id="hero-cta-studio">
+          <i class="fa-solid fa-play"></i> Launch Triage Studio
+        </a>
+        <a href="#simulator" class="btn btn-secondary" id="hero-cta-simulator">
+          <i class="fa-solid fa-sliders"></i> Test Referral Slider
+        </a>
+        <a href="#paper-section" class="btn btn-ghost" id="hero-cta-paper">
+          <i class="fa-solid fa-book-medical"></i> View Manuscript
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: CLINICAL TRIAGE STUDIO -->
+  <section class="section studio-section" id="triage-studio">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-microscope"></i> Interactive Diagnostic Workspace</div>
+        <h2 class="section-title">Clinical Triage &amp; Dense Uncertainty Studio</h2>
+        <p class="section-description">
+          Inspect dense mutual information maps, evaluate ground-truth concordance, and examine how epistemic uncertainty separates confident predictions from false positive artifacts and occult lesions.
+        </p>
+      </div>
+
+      <!-- Case Archetype Selector Carousel -->
+      <div class="case-selector-bar" id="case-selector-bar" role="tablist">
+        <!-- Generated dynamically in app.js -->
+      </div>
+
+      <!-- Main Workspace Grid -->
+      <div class="studio-workspace">
+        <!-- Left: Canvas Viewport & Layer Controls -->
+        <div class="workspace-card viewport-card">
+          <div class="card-toolbar">
+            <div class="toolbar-title">
+              <i class="fa-solid fa-layer-group"></i> Multi-Layer Radiograph Viewport
+              <span class="viewport-res-tag">512 &times; 512 px</span>
+            </div>
+            <div class="viewport-tools">
+              <button class="tool-btn" id="btn-reset-view" title="Reset Zoom & Pan">
+                <i class="fa-solid fa-arrows-rotate"></i> Reset
+              </button>
+              <button class="tool-btn" id="btn-toggle-all" title="Toggle All Layers">
+                <i class="fa-solid fa-eye"></i> Toggle All
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="canvas-container" id="canvas-container">
+            <canvas id="main-canvas" width="512" height="512"></canvas>
+            
+            <!-- Crosshair HUD Overlay -->
+            <div class="crosshair-hud" id="crosshair-hud">
+              <div class="crosshair-v" id="crosshair-v"></div>
+              <div class="crosshair-h" id="crosshair-h"></div>
+            </div>
+
+            <!-- Floating Pixel Inspector Card -->
+            <div class="pixel-inspector-badge" id="pixel-inspector-badge">
+              <div class="inspector-header">
+                <i class="fa-solid fa-crosshairs"></i> Pixel Probe <span id="probe-coord">(X: 0, Y: 0)</span>
+              </div>
+              <div class="inspector-grid">
+                <div class="probe-item">
+                  <span class="probe-lbl">Density:</span>
+                  <span class="probe-val" id="probe-density">--</span>
+                </div>
+                <div class="probe-item">
+                  <span class="probe-lbl">Pred p&#772;:</span>
+                  <span class="probe-val color-pred" id="probe-prob">--</span>
+                </div>
+                <div class="probe-item">
+                  <span class="probe-lbl">Epistemic I:</span>
+                  <span class="probe-val color-unc" id="probe-unc">--</span>
+                </div>
+                <div class="probe-item">
+                  <span class="probe-lbl">Status:</span>
+                  <span class="probe-val" id="probe-status">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer Toggle Bar -->
+          <div class="layer-controls-panel">
+            <div class="layer-control-row">
+              <label class="layer-toggle-switch">
+                <input type="checkbox" id="layer-xray" checked>
+                <span class="toggle-slider"></span>
+                <span class="layer-label"><i class="fa-solid fa-x-ray"></i> Raw Chest Radiograph</span>
+              </label>
+              <div class="slider-wrapper">
+                <span class="slider-lbl">Opacity</span>
+                <input type="range" id="opacity-xray" min="0" max="100" value="100" class="opacity-slider">
+                <span class="slider-num" id="val-opacity-xray">100%</span>
+              </div>
+            </div>
+
+            <div class="layer-control-row">
+              <label class="layer-toggle-switch">
+                <input type="checkbox" id="layer-gt" checked>
+                <span class="toggle-slider emerald"></span>
+                <span class="layer-label color-gt"><i class="fa-solid fa-draw-polygon"></i> Ground Truth (Radiologist Annotation)</span>
+              </label>
+              <div class="slider-wrapper">
+                <span class="slider-lbl">Opacity</span>
+                <input type="range" id="opacity-gt" min="0" max="100" value="80" class="opacity-slider emerald">
+                <span class="slider-num" id="val-opacity-gt">80%</span>
+              </div>
+            </div>
+
+            <div class="layer-control-row">
+              <label class="layer-toggle-switch">
+                <input type="checkbox" id="layer-pred" checked>
+                <span class="toggle-slider cyan"></span>
+                <span class="layer-label color-pred"><i class="fa-solid fa-wand-magic-sparkles"></i> Deep Ensemble Prediction</span>
+              </label>
+              <div class="slider-wrapper">
+                <span class="slider-lbl">Opacity</span>
+                <input type="range" id="opacity-pred" min="0" max="100" value="75" class="opacity-slider cyan">
+                <span class="slider-num" id="val-opacity-pred">75%</span>
+              </div>
+            </div>
+
+            <div class="layer-control-row">
+              <label class="layer-toggle-switch">
+                <input type="checkbox" id="layer-unc" checked>
+                <span class="toggle-slider amber"></span>
+                <span class="layer-label color-unc"><i class="fa-solid fa-fire-flame-curved"></i> Epistemic Uncertainty (Turbo Heatmap)</span>
+              </label>
+              <div class="slider-wrapper">
+                <span class="slider-lbl">Opacity</span>
+                <input type="range" id="opacity-unc" min="0" max="100" value="85" class="opacity-slider amber">
+                <span class="slider-num" id="val-opacity-unc">85%</span>
+              </div>
+            </div>
+
+            <div class="layer-control-row">
+              <label class="layer-toggle-switch">
+                <input type="checkbox" id="layer-err">
+                <span class="toggle-slider crimson"></span>
+                <span class="layer-label color-err"><i class="fa-solid fa-triangle-exclamation"></i> Discrepancy / Error Map (TP/FP/FN)</span>
+              </label>
+              <div class="slider-wrapper">
+                <span class="slider-lbl">Opacity</span>
+                <input type="range" id="opacity-err" min="0" max="100" value="70" class="opacity-slider crimson">
+                <span class="slider-num" id="val-opacity-err">70%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Case Telemetry & Clinical Referral Engine -->
+        <div class="workspace-card telemetry-card">
+          <div class="card-toolbar">
+            <div class="toolbar-title">
+              <i class="fa-solid fa-stethoscope"></i> Clinical Case Diagnostics
+            </div>
+            <div class="case-id-tag" id="current-case-id">CASE_1</div>
+          </div>
+
+          <div class="telemetry-body">
+            <!-- Triage Status Banner -->
+            <div class="triage-banner" id="case-triage-banner">
+              <div class="triage-icon" id="triage-icon"><i class="fa-solid fa-check-circle"></i></div>
+              <div class="triage-content">
+                <div class="triage-heading">CLINICAL TRIAGE RECOMMENDATION</div>
+                <div class="triage-decision" id="case-triage-text">Auto-Accept (Autonomous Reporting Safe)</div>
+              </div>
+            </div>
+
+            <!-- Meta attributes -->
+            <div class="case-metadata-grid">
+              <div class="meta-item">
+                <span class="meta-lbl"><i class="fa-solid fa-camera"></i> Projection View:</span>
+                <span class="meta-val" id="case-view">PA (Upright Posteroanterior)</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-lbl"><i class="fa-solid fa-hospital-user"></i> Patient Setting:</span>
+                <span class="meta-val" id="case-patient">Outpatient Ambulatory</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-lbl"><i class="fa-solid fa-fingerprint"></i> DICOM SOP:</span>
+                <span class="meta-val mono" id="case-sop">ID_0011fe81e</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-lbl"><i class="fa-solid fa-shield-halved"></i> Audit Split:</span>
+                <span class="meta-val">Zero-Leakage Holdout</span>
+              </div>
+            </div>
+
+            <!-- Quantitative Telemetry Gauges -->
+            <div class="telemetry-metrics-grid">
+              <div class="metric-box">
+                <div class="metric-num color-pred" id="case-dsc">0.884</div>
+                <div class="metric-lbl">Dice Similarity (DSC)</div>
+                <div class="metric-sub" id="case-iou">IoU: 0.792</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-num color-unc" id="case-unc-val">0.0182</div>
+                <div class="metric-lbl">Case Epistemic Unc (&Ucy;<sub>case</sub>)</div>
+                <div class="metric-sub" id="case-threshold-margin">Margin: -0.0168 vs &tau;</div>
+              </div>
+            </div>
+
+            <!-- Clinical Explanation & Radiologist Review -->
+            <div class="clinical-narrative-card">
+              <div class="narrative-title">
+                <i class="fa-solid fa-user-doctor"></i> Radiologist Diagnostic Analysis
+              </div>
+              <p class="narrative-text" id="case-clinical-findings">
+                Loading clinical interpretation...
+              </p>
+            </div>
+
+            <!-- Referral Rule Engine Box -->
+            <div class="referral-rule-box">
+              <div class="rule-header">
+                <i class="fa-solid fa-code-branch"></i> Selective Referral Logic
+              </div>
+              <div class="rule-code mono">
+                IF &Ucy;<sub>case</sub> &gt; &tau;<sub>referral</sub> (0.0350) &rarr; <span class="text-warning">ESCALATE TO EXPERT RADIOLOGIST</span><br>
+                ELSE &rarr; <span class="text-success">AUTONOMOUS DISCHARGE / REPORT</span>
+              </div>
+              <div class="rule-status-line">
+                Current evaluation: <span class="mono" id="rule-status-eval">&Ucy;<sub>case</sub> (0.0182) &le; &tau; &rarr; Autonomous Approval</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: SELECTIVE PREDICTION SIMULATOR -->
+  <section class="section simulator-section" id="simulator">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-sliders"></i> Risk-Coverage Trade-Off Optimization</div>
+        <h2 class="section-title">Clinical Selective Prediction Simulator</h2>
+        <p class="section-description">
+          Simulate autonomous deployment across the 2,135 holdout patients. Vary coverage &Phi; to observe how escalating uncertain cases improves retained segmentation quality and suppresses clinical risk.
+        </p>
+      </div>
+
+      <div class="simulator-workspace">
+        <!-- Interactive Controls -->
+        <div class="sim-controls-card">
+          <div class="control-header">
+            <i class="fa-solid fa-gears"></i> Deployment Policy Parameters
+          </div>
+
+          <!-- Coverage Slider -->
+          <div class="sim-slider-group">
+            <div class="slider-top-row">
+              <label for="slider-coverage" class="slider-title">
+                Autonomous Target Coverage (&Phi;):
+              </label>
+              <span class="slider-display-val" id="disp-coverage">85.0%</span>
+            </div>
+            <input type="range" id="slider-coverage" min="50" max="100" step="1" value="85" class="styled-slider">
+            <div class="slider-ticks">
+              <span>50% (High Human Review)</span>
+              <span>75%</span>
+              <span>85% (Optimal Pareto)</span>
+              <span>100% (No Referral)</span>
+            </div>
+          </div>
+
+          <!-- Uncertainty Threshold Info -->
+          <div class="threshold-callout">
+            <div class="callout-lbl">Calibrated Referral Cutoff (&tau;):</div>
+            <div class="callout-val mono" id="disp-threshold">&tau; = 0.0384 bits</div>
+            <div class="callout-sub">Cases with &Ucy;<sub>case</sub> &gt; &tau; are escalated to attending radiologist</div>
+          </div>
+
+          <!-- Real-Time Simulated Outcomes -->
+          <div class="sim-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Retained Autonomously</div>
+              <div class="kpi-number color-cyan" id="kpi-retained-cases">1,815</div>
+              <div class="kpi-sub" id="kpi-retained-pct">85.0% of cohort</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Referred to Specialist</div>
+              <div class="kpi-number color-amber" id="kpi-referred-cases">320</div>
+              <div class="kpi-sub" id="kpi-referred-pct">15.0% triage rate</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Retained Positive DSC</div>
+              <div class="kpi-number color-emerald" id="kpi-retained-dsc">0.6340</div>
+              <div class="kpi-sub">+4.8% over full cohort</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Radiologist Relief</div>
+              <div class="kpi-number color-violet" id="kpi-workload-relief">85.0%</div>
+              <div class="kpi-sub">Workload reduction</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk-Coverage Interactive Chart -->
+        <div class="sim-chart-card">
+          <div class="card-toolbar">
+            <div class="toolbar-title">
+              <i class="fa-solid fa-chart-area"></i> Empirical Risk-Coverage Curves ($N=2,135$)
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-dot ens"></span> Deep Ensemble (AURC: 0.8531)</span>
+              <span class="legend-item"><span class="legend-dot mc"></span> MC Dropout (0.8655)</span>
+              <span class="legend-item"><span class="legend-dot det"></span> Deterministic (0.8686)</span>
+              <span class="legend-item"><span class="legend-dot rnd"></span> Random (0.8697)</span>
+            </div>
+          </div>
+
+          <!-- SVG Risk-Coverage Curve Visualization -->
+          <div class="svg-chart-wrapper" id="svg-chart-wrapper">
+            <svg id="rc-chart-svg" viewBox="0 0 650 380" preserveAspectRatio="xMidYMid meet">
+              <!-- Grid lines & Axes injected by app.js -->
+            </svg>
+          </div>
+          <div class="chart-footnote">
+            <i class="fa-solid fa-circle-info"></i> Vertical marker reflects current coverage selection (&Phi;). Lower Empirical Risk ($1 - DSC_{all}$) indicates superior selective triage capability. Deep Ensemble Pareto frontier consistently outperforms deterministic and MC Dropout baselines across all clinical operating points.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: EMPIRICAL BENCHMARK EXPLORER -->
+  <section class="section benchmark-section" id="benchmark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-table-list"></i> Full Statistical Verification</div>
+        <h2 class="section-title">Empirical Benchmark &amp; Subgroup Analysis</h2>
+        <p class="section-description">
+          Rigorous evaluation across 2,135 patient-isolated radiographs comparing Deterministic U-Net, Monte Carlo Dropout (T=20), and Deep Ensembles (M=3).
+        </p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-nav-bar" role="tablist">
+        <button class="tab-btn active" id="tab-btn-1" data-tab="tab-table1">
+          <i class="fa-solid fa-award"></i> Table 1: Primary Architecture Benchmark
+        </button>
+        <button class="tab-btn" id="tab-btn-2" data-tab="tab-table2">
+          <i class="fa-solid fa-arrow-trend-up"></i> Table 2: Selective Prediction Pareto Frontier
+        </button>
+        <button class="tab-btn" id="tab-btn-3" data-tab="tab-table3">
+          <i class="fa-solid fa-hospital"></i> Table 3: AP Bedside vs PA Upright Stratification
+        </button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div class="tab-content-container">
+        <!-- Table 1 -->
+        <div class="tab-pane active" id="tab-table1">
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Evaluation Metric</th>
+                  <th>Deterministic Baseline (EXP-03)</th>
+                  <th>MC Dropout (T=20) (EXP-04)</th>
+                  <th>Deep Ensemble (M=3) (EXP-05)</th>
+                  <th>Clinical Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Positive Dice ($DSC_{pos}$)</strong></td>
+                  <td>0.6071 &plusmn; 0.2244</td>
+                  <td><span class="val-highlight">0.6094 &plusmn; 0.2243</span></td>
+                  <td>0.5864 &plusmn; 0.2578</td>
+                  <td>Active pneumothorax cases only (N=319)</td>
+                </tr>
+                <tr>
+                  <td><strong>Cohort Dice ($DSC_{all}$)</strong></td>
+                  <td>0.1368</td>
+                  <td>0.1363</td>
+                  <td><span class="val-highlight success">0.1766 &plusmn; 0.3259 (+29.1%)</span></td>
+                  <td>Evaluated across all 2,135 patients with true negatives</td>
+                </tr>
+                <tr>
+                  <td><strong>Jaccard Index ($IoU_{pos}$)</strong></td>
+                  <td>0.4700</td>
+                  <td><span class="val-highlight">0.4728</span></td>
+                  <td>0.4501</td>
+                  <td>Lesion intersection over union</td>
+                </tr>
+                <tr>
+                  <td><strong>Lesion Recall (Sensitivity)</strong></td>
+                  <td><span class="val-highlight">0.6974</span></td>
+                  <td>0.6917</td>
+                  <td>0.6279</td>
+                  <td>Sensitivity on positive patients</td>
+                </tr>
+                <tr>
+                  <td><strong>Healthy Sparing (Specificity)</strong></td>
+                  <td>0.9996</td>
+                  <td>0.9996</td>
+                  <td><span class="val-highlight success">0.9997</span></td>
+                  <td>Healthy lung tissue sparing</td>
+                </tr>
+                <tr>
+                  <td><strong>AUROC-ED (Error Detection) &uparrow;</strong></td>
+                  <td><span class="val-highlight">0.9900</span></td>
+                  <td>0.5000</td>
+                  <td>0.9617</td>
+                  <td>Discriminating pixel false positives & negatives</td>
+                </tr>
+                <tr>
+                  <td><strong>ESCE (Calibration Error) &downarrow;</strong></td>
+                  <td>0.0012</td>
+                  <td>0.0012</td>
+                  <td><span class="val-highlight success">0.0006 (&minus;50.0%)</span></td>
+                  <td>Expected Spatial Calibration Error cut in half</td>
+                </tr>
+                <tr>
+                  <td><strong>Brier Score &downarrow;</strong></td>
+                  <td>0.0001</td>
+                  <td>0.0001</td>
+                  <td>0.0001</td>
+                  <td>Mean squared probability deviation</td>
+                </tr>
+                <tr>
+                  <td><strong>AURC (Risk-Coverage Area) &downarrow;</strong></td>
+                  <td>0.8686</td>
+                  <td>0.8655</td>
+                  <td><span class="val-highlight success">0.8531 (Optimal)</span></td>
+                  <td>Best human-AI collaborative triage Pareto frontier</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Table 2 -->
+        <div class="tab-pane" id="tab-table2">
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Referral Strategy</th>
+                  <th>AURC &downarrow;</th>
+                  <th>Retained Dice @ 100%</th>
+                  <th>Retained Dice @ 90%</th>
+                  <th>Retained Dice @ 80%</th>
+                  <th>Retained Dice @ 70%</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Random Referral Baseline</strong></td>
+                  <td>0.8697</td>
+                  <td>0.1368</td>
+                  <td>0.1367</td>
+                  <td>0.1379</td>
+                  <td>0.1382</td>
+                </tr>
+                <tr>
+                  <td><strong>Deterministic Entropy</strong></td>
+                  <td>0.8686</td>
+                  <td>0.1368</td>
+                  <td>0.1383</td>
+                  <td>0.1391</td>
+                  <td>0.1348</td>
+                </tr>
+                <tr>
+                  <td><strong>MC Dropout Variance</strong></td>
+                  <td>0.8655</td>
+                  <td>0.1363</td>
+                  <td>0.1358</td>
+                  <td>0.1360</td>
+                  <td>0.1351</td>
+                </tr>
+                <tr class="row-champion">
+                  <td><strong>Deep Ensemble Mutual Information</strong></td>
+                  <td><span class="val-highlight success">0.8531</span></td>
+                  <td><span class="val-highlight success">0.1766</span></td>
+                  <td><span class="val-highlight success">0.1733</span></td>
+                  <td><span class="val-highlight success">0.1548</span></td>
+                  <td><span class="val-highlight success">0.1493</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Table 3 -->
+        <div class="tab-pane" id="tab-table3">
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Projection View</th>
+                  <th>Cases (N)</th>
+                  <th>Model Architecture</th>
+                  <th>Positive Dice ($DSC_{pos}$)</th>
+                  <th>Cohort Dice ($DSC_{all}$)</th>
+                  <th>AUROC-ED</th>
+                  <th>Mean Case Uncertainty</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="3"><strong>AP (Bedside Portable)</strong><br><span class="table-subnote">Supine / ICU trauma</span></td>
+                  <td rowspan="3">837 (39.2%)</td>
+                  <td>Deterministic Baseline</td>
+                  <td>0.6049</td>
+                  <td>0.1279</td>
+                  <td>0.9888</td>
+                  <td>0.3444</td>
+                </tr>
+                <tr>
+                  <td>MC Dropout (T=20)</td>
+                  <td><span class="val-highlight">0.6158</span></td>
+                  <td>0.1266</td>
+                  <td>0.5000</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>Deep Ensemble (M=3)</td>
+                  <td>0.5629</td>
+                  <td><span class="val-highlight success">0.1551</span></td>
+                  <td>0.9645</td>
+                  <td>0.0349</td>
+                </tr>
+                <tr class="table-divider">
+                  <td rowspan="3"><strong>PA (Upright Standing)</strong><br><span class="table-subnote">Outpatient ambulatory</span></td>
+                  <td rowspan="3">1,298 (60.8%)</td>
+                  <td>Deterministic Baseline</td>
+                  <td>0.6083</td>
+                  <td>0.1425</td>
+                  <td>0.9909</td>
+                  <td>0.3380</td>
+                </tr>
+                <tr>
+                  <td>MC Dropout (T=20)</td>
+                  <td>0.6057</td>
+                  <td>0.1426</td>
+                  <td>0.5000</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>Deep Ensemble (M=3)</td>
+                  <td>0.5997</td>
+                  <td><span class="val-highlight success">0.1905</span></td>
+                  <td>0.9599</td>
+                  <td>0.0360</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: FIGURE GALLERY (LIGHTBOX) -->
+  <section class="section gallery-section" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-chart-pie"></i> Publication Graphics</div>
+        <h2 class="section-title">Scientific Figures &amp; Multi-Panel Diagnostics</h2>
+        <p class="section-description">
+          High-resolution 300 DPI figures illustrating selective risk curves, spatial calibration, error detection ROCs, and 5-panel clinical archetypes.
+        </p>
+      </div>
+
+      <div class="gallery-grid">
+        <!-- Fig 1 -->
+        <div class="gallery-card" data-img="assets/fig1_risk_coverage_curves.png" data-title="Figure 1: Risk-Coverage Selective Prediction Curves">
+          <div class="gallery-img-wrapper">
+            <img src="assets/fig1_risk_coverage_curves.png" alt="Figure 1: Risk-Coverage Selective Prediction Curves" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 1</div>
+            <div class="fig-title">Risk-Coverage Selective Prediction Pareto Curves</div>
+            <p class="fig-desc">Pareto frontier showing Deep Ensemble outperforming deterministic baseline across all retention coverages.</p>
+          </div>
+        </div>
+
+        <!-- Fig 2 -->
+        <div class="gallery-card" data-img="assets/fig2_calibration_curves.png" data-title="Figure 2: Reliability Diagrams & Expected Spatial Calibration Error">
+          <div class="gallery-img-wrapper">
+            <img src="assets/fig2_calibration_curves.png" alt="Figure 2: Calibration Diagrams" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 2</div>
+            <div class="fig-title">Reliability Diagrams &amp; Spatial Calibration (ESCE)</div>
+            <p class="fig-desc">Deep ensemble reduces spatial calibration error by 50% (ESCE 0.0006 vs 0.0012).</p>
+          </div>
+        </div>
+
+        <!-- Fig 3 -->
+        <div class="gallery-card" data-img="assets/fig3_auroc_error_detection.png" data-title="Figure 3: ROC Curves for Pixel-Level Predictive Error Detection">
+          <div class="gallery-img-wrapper">
+            <img src="assets/fig3_auroc_error_detection.png" alt="Figure 3: Error Detection ROC" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 3</div>
+            <div class="fig-title">ROC Curves for Predictive Error Detection (AUROC-ED)</div>
+            <p class="fig-desc">Discriminating segmentation error pixels via epistemic mutual information (AUROC: 0.9617).</p>
+          </div>
+        </div>
+
+        <!-- Fig 4 -->
+        <div class="gallery-card" data-img="assets/fig4_ap_vs_pa_subgroups.png" data-title="Figure 4: AP Bedside vs PA Standing Subgroup Stratification">
+          <div class="gallery-img-wrapper">
+            <img src="assets/fig4_ap_vs_pa_subgroups.png" alt="Figure 4: Subgroups Analysis" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 4</div>
+            <div class="fig-title">AP Bedside vs PA Upright Subgroup Disparity</div>
+            <p class="fig-desc">Stratification across bedside portable radiographs (N=837) vs standard upright views (N=1,298).</p>
+          </div>
+        </div>
+
+        <!-- Fig 5 Full Width -->
+        <div class="gallery-card card-wide" data-img="assets/fig5_qualitative_uncertainty_maps.png" data-title="Figure 5: Five-Panel Qualitative Uncertainty Estimation Across Clinical Archetypes">
+          <div class="gallery-img-wrapper">
+            <img src="assets/fig5_qualitative_uncertainty_maps.png" alt="Figure 5: Qualitative Maps" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect Full-Scale Panel (4800 &times; 4500 px)</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 5 (Comprehensive Multi-Panel)</div>
+            <div class="fig-title">Qualitative Uncertainty Estimation &amp; Triage Across Five Clinical Archetypes</div>
+            <p class="fig-desc">5&times;5 panel comparing raw chest radiographs, ground-truth annotations, deep ensemble predictions, epistemic mutual information maps, and discrepancy error maps for Confident Positive, Subtle Lesion, Skin Fold Confounder, Occult Lesion, and Healthy Lung.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: PAPER & CITATION -->
+  <section class="section paper-section" id="paper-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-graduation-cap"></i> Academic Publication</div>
+        <h2 class="section-title">Research Manuscript &amp; Citation</h2>
+        <p class="section-description">
+          Full camera-ready conference paper formatted for MIDL/MICCAI with rigorous mathematical formulations and empirical validation.
+        </p>
+      </div>
+
+      <div class="paper-card">
+        <div class="paper-header">
+          <div class="paper-badge">MIDL / MICCAI Format</div>
+          <h3 class="paper-title">
+            Uncertainty-Aware Pneumothorax Segmentation and Selective Prediction in Chest Radiographs
+          </h3>
+          <div class="paper-authors">
+            <strong>Raju Sah</strong> &bull; Medical AI &amp; Computer Vision Research
+          </div>
+        </div>
+
+        <div class="paper-abstract">
+          <h4>Abstract</h4>
+          <p>
+            Deep learning models for pneumothorax segmentation often exhibit severe overconfidence on thoracic confounders (e.g., skin folds, clavicular margins) and silent failures on occult apical lesions. In this study, we implement an uncertainty-aware segmentation framework on an audited cohort of 2,135 patient-isolated chest radiographs from the SIIM-ACR dataset with zero data leakage. We evaluate Monte Carlo Dropout and Deep Ensembles against a deterministic ResNet34 U-Net baseline. Deep Ensembles halve the Expected Spatial Calibration Error (ESCE: 0.0006 vs 0.0012) and achieve an optimal risk-coverage area (AURC: 0.8531). Furthermore, voxel-level mutual information successfully discriminates segmentation errors (AUROC-ED: 0.9617). By coupling dense epistemic uncertainty with a case-level selective prediction mechanism, our system routes ambiguous and occult cases to expert radiologists while safely automating high-confidence diagnoses, establishing a clinically viable human-AI collaborative triage pipeline.
+          </p>
+        </div>
+
+        <!-- BibTeX Box -->
+        <div class="bibtex-wrapper">
+          <div class="bibtex-toolbar">
+            <span><i class="fa-solid fa-quote-right"></i> BibTeX Citation</span>
+            <button class="btn-copy-bib" id="btn-copy-bib">
+              <i class="fa-solid fa-copy"></i> Copy Citation
+            </button>
+          </div>
+          <pre class="bibtex-code" id="bibtex-text">@article{sah2026uncertainty,
+  title={Uncertainty-Aware Pneumothorax Segmentation and Selective Prediction in Chest Radiographs},
+  author={Sah, Raju},
+  journal={arXiv preprint},
+  year={2026},
+  publisher={Medical AI Research Portfolio},
+  note={Holdout evaluation on N=2,135 patients; Code available at github.com/raju-sah/pneumothorax-segmentation}
+}</pre>
+        </div>
+
+        <div class="paper-actions">
+          <a href="https://github.com/raju-sah/pneumothorax-segmentation/tree/main/paper" target="_blank" rel="noopener" class="btn btn-primary" id="btn-view-latex">
+            <i class="fa-solid fa-code"></i> View LaTeX Source (paper/main.tex)
+          </a>
+          <a href="https://github.com/raju-sah/pneumothorax-segmentation" target="_blank" rel="noopener" class="btn btn-secondary" id="btn-view-gh">
+            <i class="fa-brands fa-github"></i> Explore GitHub Repository
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">DeepRisk<span class="brand-accent">-CXR</span></div>
+        <p class="footer-tagline">
+          Second Medical AI Research Portfolio Project.<br>
+          Autonomous holdout evaluation on 2,135 patients with zero data leakage.
+        </p>
+      </div>
+      <div class="footer-col links-col">
+        <div class="footer-heading">Sections</div>
+        <a href="#triage-studio">Triage Studio</a>
+        <a href="#simulator">Selective Prediction</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#gallery">Figures Gallery</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">Provenance</div>
+        <div class="footer-meta">
+          <span><strong>Dataset:</strong> SIIM-ACR Pneumothorax (10,675 images)</span>
+          <span><strong>Architecture:</strong> ResNet34 U-Net Deep Ensemble (M=3)</span>
+          <span><strong>Inference:</strong> Dense Epistemic Mutual Information</span>
+          <span><strong>Hosted:</strong> GitHub Pages (Static HTML/CSS/JS)</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        &copy; 2026 Raju Sah. Open-source medical AI research. Licensed under MIT.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal for Full Resolution Images -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightbox-close" aria-label="Close modal">&times;</button>
+      <div class="lightbox-header">
+        <h3 id="lightbox-title">Figure Preview</h3>
+      </div>
+      <div class="lightbox-body">
+        <img id="lightbox-img" src="" alt="Full resolution view">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toast">Citation copied to clipboard!</div>
+
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
