@@ -108,7 +108,7 @@ The holdout test cohort ($N=2,135$) exhibits severe natural clinical imbalance: 
 \label{sec:methodology}
 
 \subsection{Base Architecture}
-Our core architecture is a ResNet34 U-Net~\cite{ronneberger2015u, he2016deep}. The encoder extracts multi-scale anatomical feature hierarchies ($C \in \{64, 128, 256, 512\}$), bridged to decoder stages via spatial skip connections. To support MC Dropout, spatial 2D dropout layers ($p = 0.20$) are integrated into all decoder convolutional blocks. Models are trained on $512 \times 512$ radiographs using an AdamW optimizer ($\text{lr} = 10^{-4}$, weight decay $10^{-4}$) minimizing a combined Binary Cross-Entropy and Soft Dice loss:
+Our core architecture is a ResNet34 U-Net~\cite{ronneberger2015u, he2016deep}. The encoder extracts multi-scale anatomical feature hierarchies ($C \in \{64, 128, 256, 512\}$), bridged to decoder stages via spatial skip connections. To support MC Dropout, spatial 2D dropout layers ($p = 0.20$) are integrated into all decoder convolutional blocks. Models are trained on $512 \times 512$ radiographs using an AdamW optimizer ($\text{lr} = 10^{-3}$, weight decay $10^{-4}$, cosine annealing to $10^{-6}$) minimizing a combined Binary Cross-Entropy and Soft Dice loss:
 \begin{equation}
     \mathcal{L}_{\text{total}}(y, \hat{y}) = 0.5 \cdot \mathcal{L}_{\text{BCE}}(y, \hat{y}) + 0.5 \cdot \mathcal{L}_{\text{Dice}}(y, \hat{y})
 \end{equation}

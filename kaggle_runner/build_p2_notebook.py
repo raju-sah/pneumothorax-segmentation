@@ -12,7 +12,20 @@ import nbformat as nbf
 
 P2_CODE = r'''
 # P2 PIXEL JOB — inference only (checkpoints from dataset, no retraining)
-import os, glob, json, random
+# GPU bootstrap (no torch import before this): sm<70 (P100) needs cu118 torch.
+import os, subprocess
+_q = subprocess.run(["nvidia-smi", "--query-gpu=compute_cap", "--format=csv,noheader"],
+                    capture_output=True, text=True)
+_sm = _q.stdout.strip().split(".")
+SM = (int(_sm[0]), int(_sm[1])) if len(_sm) == 2 and _sm[0].strip().isdigit() else (9, 0)
+print("GPU compute capability:", SM)
+if SM < (7, 0):
+    subprocess.run(["pip", "install", "-q", "torch==2.3.1+cu118", "torchvision==0.18.1+cu118",
+                    "--index-url", "https://download.pytorch.org/whl/cu118"], check=True)
+    print("downgraded torch to cu118 (sm_60 kernels)")
+os.system("pip install -q pydicom albumentations pretrainedmodels efficientnet_pytorch tqdm munch")
+os.system("pip install -q --no-deps segmentation-models-pytorch==0.3.3")
+import glob, json, random
 import numpy as np, pandas as pd, pydicom, cv2
 import torch, torch.nn as nn, torch.nn.functional as F
 from scipy.stats import wilcoxon
@@ -22,6 +35,7 @@ import segmentation_models_pytorch as smp
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device, torch.cuda.get_device_name(0) if torch.cuda.is_available() else "")
+print("torch:", torch.__version__, "sm:", torch.cuda.get_device_capability(0))
 
 def seed_everything(s=42):
     random.seed(s); np.random.seed(s)
@@ -50,7 +64,21 @@ def rle_decode(s, shape=(1024, 1024)):
     starts, lens = a[0::2] - 1, a[1::2]
     m = np.zeros(shape[0] * shape[1], np.uint8)
     for st, ln in zip(starts, lens): m[st:st + ln] = 1
-    return m.reshape(shape)
+    return m.reshape(shape, order="F")  # SIIM RLE is column-major (match training)
+
+def rle_cell_to_mask(cell, shape=(1024, 1024)):
+    import json as _json
+    if cell is None or (isinstance(cell, float) and np.isnan(cell)): return np.zeros(shape, np.uint8)
+    items = cell
+    if isinstance(cell, str):
+        s = cell.strip()
+        items = _json.loads(s) if s.startswith("[") else [s]
+    if isinstance(items, str): items = [items]
+    m = np.zeros(shape, np.uint8)
+    for rle in items:
+        if str(rle).strip() in ("-1", ""): continue
+        m = np.maximum(m, rle_decode(str(rle), shape))
+    return m
 
 def load_case(row, size=512):
     ds = pydicom.dcmread(row["dcm_path"])
@@ -59,7 +87,7 @@ def load_case(row, size=512):
     img = cv2.resize(img, (size, size), interpolation=cv2.INTER_LINEAR)
     img = np.stack([img] * 3, 0)
     for i, (mu, sd) in enumerate(zip(SMP_MEAN, SMP_STD)): img[i] = (img[i] - mu) / sd
-    mask = rle_decode(row["EncodedPixelsList"]) if "EncodedPixelsList" in row else np.zeros((1024, 1024), np.uint8)
+    mask = rle_cell_to_mask(row["EncodedPixelsList"]) if "EncodedPixelsList" in row else np.zeros((1024, 1024), np.uint8)
     mask = cv2.resize(mask, (size, size), interpolation=cv2.INTER_NEAREST).astype(np.float32)
     return torch.from_numpy(img), torch.from_numpy(mask)
 
@@ -70,7 +98,8 @@ class PUNet(nn.Module):
         self.model = smp.Unet(encoder_name="resnet34", encoder_weights=None, in_channels=3, classes=1)
     def forward(self, x): return self.model(x)
 
-W = "/kaggle/input/pneumothorax-ensemble-weights-m3/"
+W = os.path.dirname(glob.glob("/kaggle/input/**/model_seed42.pt", recursive=True)[0]) + "/"
+print("weights dir:", W)
 nets = {}
 for sd in (42, 43, 44):
     m = PUNet().to(device)
@@ -237,6 +266,8 @@ with open("p2_diagnosis.txt", "w") as f:
 
 def build(path="kaggle_runner/p2_pixel_job.ipynb"):
     nb = nbf.v4.new_notebook()
+    nb.metadata["kernelspec"] = {"display_name": "Python 3", "language": "python", "name": "python3"}
+    nb.metadata["language_info"] = {"name": "python", "version": "3.10.0"}
     cells = [nbf.v4.new_markdown_cell(
         "# P2 Pixel-Level Job (EXP-07 temp scaling, global AUROC-ED, M/T ablations, MC diagnosis)\n"
         "Inference-only on T4. Checkpoints: `pneumothorax-ensemble-weights-m3`. Splits: `siim-acr-processed-splits`.")]
