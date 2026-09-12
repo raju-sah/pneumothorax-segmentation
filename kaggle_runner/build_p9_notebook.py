@@ -87,6 +87,7 @@ def run_train(net, seed, tag):
     sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=10, eta_min=1e-6)
     scl = torch.cuda.amp.GradScaler()
     best, bp = -1, f"{tag}.pt"
+    trace = []
     for ep in range(1, 11):
         net.train()
         if isinstance(net, MCNet): net.armed = True
@@ -100,18 +101,23 @@ def run_train(net, seed, tag):
         sch.step()
         net.eval()
         if isinstance(net, MCNet): net.armed = False
-        vd = []
+        vd_all, vd_pos = [], []
         with torch.no_grad():
             for b in va_ld:
                 p = torch.sigmoid(net(b["image"].to(device))).cpu().numpy()
                 y = b["mask"].numpy()
                 for i in range(len(y)):
-                    vd.append(compute_dice_coefficient((y[i, 0] > 0).astype(np.uint8),
-                                                      (p[i, 0] >= 0.5).astype(np.uint8)))
-        vd = np.array(vd); pos = vd  # all-case for logging
-        print(f"{tag} ep{ep}/10 [{time.time()-t0:.0f}s] loss={tl/len(tr_df):.4f} valDSC={vd.mean():.4f}", flush=True)
-        if vd.mean() > best: best = float(vd.mean()); torch.save(net.state_dict(), bp)
+                    d = compute_dice_coefficient((y[i, 0] > 0).astype(np.uint8),
+                                                 (p[i, 0] >= 0.5).astype(np.uint8))
+                    vd_all.append(d)
+                    if (y[i, 0] > 0).sum() > 0: vd_pos.append(d)
+        m_all = float(np.mean(vd_all)); m_pos = float(np.mean(vd_pos)) if vd_pos else 0.0
+        print(f"{tag} ep{ep}/10 [{time.time()-t0:.0f}s] loss={tl/len(tr_df):.4f} valDSC_all={m_all:.4f} valDSC_pos={m_pos:.4f}", flush=True)
+        trace.append({"epoch": ep, "val_all": round(m_all, 4), "val_pos": round(m_pos, 4)})
+        # VERBATIM original rule: best = argmax val DSC_pos (NOT all-case)
+        if m_pos > best: best = m_pos; torch.save(net.state_dict(), bp)
     print(tag, "best:", best, flush=True)
+    with open(f"{tag}_trace.json", "w") as f: json.dump(trace, f)
     return bp
 
 p42 = run_train(DetNet(), 42, "det_seed42")
