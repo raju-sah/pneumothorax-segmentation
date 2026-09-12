@@ -76,13 +76,13 @@ def compute_aurc(coverages: np.ndarray, risks: np.ndarray) -> float:
         risks: Array of empirical risks corresponding to each coverage.
 
     Returns:
-        float: AURC value (lower is better).
+        float: AURC value (lower is better). Standard definition: trapezoid of
+        risk over coverage directly (no rescaling of the coverage axis).
     """
-    # Normalize coverages so integration domain spans [0, 1]
-    cov_norm = (coverages - coverages[0]) / (coverages[-1] - coverages[0])
+    # ponytail: no coverage rescale; coverages already in [0, 1].
     try:
         from scipy.integrate import trapezoid
-        return float(trapezoid(risks, cov_norm))
+        return float(trapezoid(risks, coverages))
     except ImportError:
         trapz_fn = getattr(np, "trapezoid", getattr(np, "trapz", None))
         return float(trapz_fn(risks, cov_norm))

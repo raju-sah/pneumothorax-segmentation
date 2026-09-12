@@ -573,17 +573,17 @@ function drawRiskCoverageSVG() {
     <text transform="translate(20, ${padTop + chartH / 2}) rotate(-90)" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">Empirical Risk (1 &minus; DSC<sub>all</sub>)</text>
   `;
 
-  // Empirical Curve Points (derived from risk_coverage_curves.csv)
+  // Empirical Curve Points (from scripts/regen_fig1.py, standard def)
   const coverages = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-  
+
   // Random
-  const riskRnd = [0.862, 0.864, 0.865, 0.867, 0.868, 0.869];
+  const riskRnd = [0.863, 0.863, 0.863, 0.863, 0.863, 0.863];
   // Deterministic
-  const riskDet = [0.840, 0.848, 0.854, 0.861, 0.866, 0.868];
+  const riskDet = [0.862, 0.865, 0.865, 0.861, 0.862, 0.863];
   // MC Dropout
-  const riskMC  = [0.835, 0.842, 0.850, 0.858, 0.864, 0.865];
-  // Deep Ensemble (Champion Pareto)
-  const riskEns = [0.812, 0.821, 0.830, 0.839, 0.848, 0.853];
+  const riskMC  = [0.867, 0.866, 0.866, 0.864, 0.864, 0.864];
+  // Deep Ensemble (higher retained Dice => lower risk level)
+  const riskEns = [0.858, 0.855, 0.851, 0.845, 0.827, 0.823];
 
   function buildPath(risks) {
     return coverages.map((c, i) => `${i === 0 ? 'M' : 'L'} ${toX(c).toFixed(1)} ${toY(risks[i]).toFixed(1)}`).join(' ');
@@ -609,7 +609,7 @@ function drawRiskCoverageSVG() {
   const markerHTML = `
     <g id="svg-coverage-cursor">
       <line id="cursor-line" x1="${toX(0.85)}" y1="${padTop}" x2="${toX(0.85)}" y2="${H - padBottom}" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3 3"/>
-      <circle id="cursor-point" cx="${toX(0.85)}" cy="${toY(0.843)}" r="6" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
+      <circle id="cursor-point" cx="${toX(0.85)}" cy="${toY(0.836)}" r="6" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
     </g>
   `;
 
@@ -633,8 +633,17 @@ function updateSVGMarker(covPct) {
 
   const x = padLeft + ((cov - minCov) / (maxCov - minCov)) * chartW;
 
-  // Ensemble risk approximation at cov
-  const ensRisk = 0.812 + Math.pow((cov - 0.5) / 0.5, 1.1) * (0.853 - 0.812);
+  // Ensemble risk interpolated from empirical points (standard def)
+  const ensCov = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+  const ensRiskPts = [0.858, 0.855, 0.851, 0.845, 0.827, 0.823];
+  let ensRisk = ensRiskPts[ensRiskPts.length - 1];
+  for (let i = 0; i < ensCov.length - 1; i++) {
+    if (cov >= ensCov[i] && cov <= ensCov[i + 1]) {
+      const t = (cov - ensCov[i]) / (ensCov[i + 1] - ensCov[i]);
+      ensRisk = ensRiskPts[i] + t * (ensRiskPts[i + 1] - ensRiskPts[i]);
+      break;
+    }
+  }
   const y = padTop + ((maxRisk - ensRisk) / (maxRisk - minRisk)) * chartH;
 
   const line = document.getElementById('cursor-line');

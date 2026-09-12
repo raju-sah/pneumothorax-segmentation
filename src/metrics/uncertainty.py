@@ -94,7 +94,7 @@ def compute_error_detection_auroc(
 
     # Subsample if pixel count is massive for speed
     if len(error) > 100_000:
-        idx = np.random.choice(len(error), size=100_000, replace=False)
+        idx = np.random.default_rng(42).choice(len(error), size=100_000, replace=False)
         error = error[idx]
         uncertainty = uncertainty[idx]
 
@@ -129,7 +129,7 @@ def compute_uncertainty_error_correlation(
         return 0.0
 
     if len(error) > 50_000:
-        idx = np.random.choice(len(error), size=50_000, replace=False)
+        idx = np.random.default_rng(42).choice(len(error), size=50_000, replace=False)
         error = error[idx]
         uncertainty = uncertainty[idx]
 

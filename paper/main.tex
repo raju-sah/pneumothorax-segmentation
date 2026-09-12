@@ -14,6 +14,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
+\graphicspath{{../docs/assets/}{docs/assets/}{./}}
+
 \hypersetup{
     colorlinks=true,
     linkcolor=blue!70!black,
@@ -82,7 +84,7 @@ The SIIM-ACR Pneumothorax Segmentation dataset comprises chest radiographs curat
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{docs/assets/fig1_risk_coverage_curves.png}
+    \includegraphics[width=0.85\linewidth]{fig1_risk_coverage_curves.png}
     \caption{\textbf{Figure 1: Risk-Coverage Curves ($N=2,135$).} Empirical risk ($1 - \text{DSC}_{\text{all}}$) plotted against autonomous retention coverage $\Phi$ using the standard empirical coverage grid. Ranking quality is comparable across methods ($\text{AURC} \approx 0.86$); the ensemble curve sits lower because it retains higher cohort Dice at every coverage.}
     \label{fig:risk_coverage}
 \end{figure}
@@ -134,13 +136,13 @@ Mutual information isolates epistemic parameter uncertainty, approaching zero wh
 \begin{figure}[t]
     \centering
     \begin{subfigure}[b]{0.48\linewidth}
-        \includegraphics[width=\linewidth]{docs/assets/fig2_calibration_curves.png}
+        \includegraphics[width=\linewidth]{fig2_calibration_curves.png}
         \caption{Reliability Calibration Diagrams}
         \label{fig:calibration}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\linewidth}
-        \includegraphics[width=\linewidth]{docs/assets/fig3_auroc_error_detection.png}
+        \includegraphics[width=\linewidth]{fig3_auroc_error_detection.png}
         \caption{Pixel Error Detection ROC (AUROC-ED)}
         \label{fig:auroc_ed}
     \end{subfigure}
@@ -253,7 +255,7 @@ In emergency medicine, portable bedside anteroposterior (AP) radiographs are per
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.75\linewidth]{docs/assets/fig4_ap_vs_pa_subgroups.png}
+    \includegraphics[width=0.75\linewidth]{fig4_ap_vs_pa_subgroups.png}
     \caption{\textbf{Figure 4: Subgroup Performance Disparity Across Projection Views.} AP bedside radiographs exhibit systematically lower overlap accuracy and higher case uncertainty than upright PA views.}
     \label{fig:subgroups}
 \end{figure}
@@ -272,7 +274,7 @@ Fig.~\ref{fig:qualitative} illustrates 5 distinct clinical archetypes:
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=0.95\linewidth]{docs/assets/fig5_qualitative_uncertainty_maps.png}
+    \includegraphics[width=0.95\linewidth]{fig5_qualitative_uncertainty_maps.png}
     \caption{\textbf{Figure 5: Qualitative Multi-Panel Diagnostics Across Five Clinical Archetypes.} Columns display: (1) Raw Chest Radiograph, (2) Ground Truth Annotation, (3) Ensemble Segmentation, (4) Dense Epistemic Mutual Information, and (5) Discrepancy Error Map.}
     \label{fig:qualitative}
 \end{figure}

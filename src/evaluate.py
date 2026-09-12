@@ -109,5 +109,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate Uncertainty Predictions")
     parser.add_argument("--method", type=str, default="ensemble", help="Method identifier")
     parser.add_argument("--output_dir", type=str, default="results/", help="Output directory")
+    parser.add_argument("--probs", type=str, default=None, help="Path to (N,H,W) probs .npy")
+    parser.add_argument("--uncertainties", type=str, default=None, help="Path to (N,H,W) uncertainty .npy")
+    parser.add_argument("--targets", type=str, default=None, help="Path to (N,H,W) targets .npy")
     args = parser.parse_args()
-    print("Evaluation module loaded.")
+    if args.probs and args.uncertainties and args.targets:
+        evaluate_test_predictions(
+            np.load(args.probs), np.load(args.uncertainties), np.load(args.targets),
+            args.output_dir, args.method)
+    else:
+        print("Evaluation module loaded. Pass --probs/--uncertainties/--targets .npy to run.")
