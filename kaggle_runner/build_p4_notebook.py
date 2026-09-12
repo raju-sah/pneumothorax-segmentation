@@ -18,7 +18,7 @@ if SM < (7, 0):
     subprocess.run(["pip", "install", "-q", "torch==2.3.1+cu118", "torchvision==0.18.1+cu118",
                     "--index-url", "https://download.pytorch.org/whl/cu118"], check=True)
 os.system("pip install -q pydicom albumentations pretrainedmodels efficientnet_pytorch tqdm munch")
-os.system("pip install -q --no-deps segmentation-models-pytorch==0.3.3")
+os.system("pip install -q --no-deps --no-build-isolation segmentation-models-pytorch>=0.3.3 2>/dev/null || pip install -q --no-deps segmentation-models-pytorch")
 import glob, json, random, time
 import numpy as np, pandas as pd, pydicom, cv2
 import torch, torch.nn as nn, torch.nn.functional as F
@@ -121,15 +121,16 @@ def acc_up(a, p, y):
 fout = open("test_predictions_p4.csv", "w")
 fout.write("ImageId,PatientID,ViewPosition,HasPneumothorax,det_dice,mc_dice,ens_dice,m1_dice,m2_dice,det_unc,ens_unc,mc_unc,mc_var_mean\n")
 t0 = time.time()
+_run_det = 0.0
 for j in range(N):
     row = te_df.iloc[j]
-    x, y = load_xy(row); yn = y.numpy()[0]; xb = x.unsqueeze(0).to(device)
-    with torch.no_grad(), torch.cuda.amp.autocast():
+    x, y = load_xy(row); yn = y.numpy(); xb = x.unsqueeze(0).to(device)
+    with torch.no_grad():
         pd_ = torch.sigmoid(orig[42](xb))[0, 0].cpu().numpy()
     ps = []
     with torch.no_grad():
         for sd in (42, 43, 44):
-            with torch.cuda.amp.autocast():
+            if True:
                 ps.append(torch.sigmoid(orig[sd](xb))[0, 0].cpu().numpy())
     em = np.stack(ps).mean(0)
     ee = entropy(em)
@@ -138,7 +139,7 @@ for j in range(N):
     mc.armed = True; mcs = []
     with torch.no_grad():
         for t in range(20):
-            with torch.cuda.amp.autocast():
+            if True:
                 mcs.append(torch.sigmoid(mc(xb))[0, 0].cpu().numpy())
     mc.armed = False
     mcs = np.stack(mcs); mmean = mcs.mean(0); mvar = mcs.var(0)
@@ -153,6 +154,11 @@ for j in range(N):
                f"{dice_np(pd_, yn)},{dice_np(mmean, yn)},{dice_np(em, yn)},"
                f"{dice_np(ps[0], yn)},{dice_np(np.stack(ps[:2]).mean(0), yn)},"
                f"{topk_mean(ed)},{topk_mean(mi)},{topk_mean(mvar)},{float(mvar.mean())}\n")
+    _run_det += dice_np(pd_, yn)
+    if (j + 1) == 100:
+        _d = _run_det / 100
+        print(f"SANITY det_dice@100 = {_d:.4f} (expect ~0.20: first-100 rows are neg-heavy)", flush=True)
+        assert abs(_d - 0.20) < 0.08, f"GATE: pipeline mismatch ({_d:.4f})"
     if (j + 1) % 400 == 0:
         fout.flush(); mm.flush()
         print(f"{j+1}/{N} ({(time.time()-t0)/60:.1f} min)", flush=True)
@@ -166,11 +172,11 @@ with torch.no_grad():
         x, y = load_xy(va_df.iloc[j]); xb = x.unsqueeze(0).to(device)
         ps = []
         for sd in (42, 43, 44):
-            with torch.cuda.amp.autocast():
+            if True:
                 ps.append(torch.sigmoid(orig[sd](xb))[0, 0].cpu().numpy())
         em = np.stack(ps).mean(0)
         vl.append(np.log(np.clip(em, 1e-6, 1 - 1e-6) / np.clip(1 - em, 1e-6, 1 - 1e-6)).ravel())
-        vy.append(y.numpy()[0].ravel())
+        vy.append(y.numpy().ravel())
 vl = np.concatenate(vl); vy = np.concatenate(vy)
 best_T, best_nll = 1.0, 1e18
 for T in [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0]:
