@@ -18,7 +18,15 @@ if SM < (7, 0):
     subprocess.run(["pip", "install", "-q", "torch==2.3.1+cu118", "torchvision==0.18.1+cu118",
                     "--index-url", "https://download.pytorch.org/whl/cu118"], check=True)
 os.system("pip install -q pydicom albumentations pretrainedmodels efficientnet_pytorch tqdm munch scikit-learn")
+os.system("pip install -q --no-deps segmentation-models-pytorch")
 import torch
+from typing import List, Dict, Tuple, Optional, Any
+import sys, time, math, glob, ast, shutil
+import numpy as np, pandas as pd, pydicom, cv2
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 print("torch:", torch.__version__)
 import segmentation_models_pytorch as smp
 print("smp:", smp.__version__)
