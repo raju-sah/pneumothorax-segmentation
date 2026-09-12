@@ -114,15 +114,16 @@ All experiments (EXP-01 through EXP-10) were executed using the zero-leakage tes
 | **AUROC-ED** (Error Detection) $\uparrow$ | **0.9900** | 0.5000 | 0.9617 |
 | **ESCE** (Calibration Error) $\downarrow$ | 0.0012 | 0.0012 | **0.0006** (50% reduction) |
 | **Brier Score** $\downarrow$ | 0.0001 | 0.0001 | 0.0001 |
-| **AURC** (Risk-Coverage) $\downarrow$ | 0.8686 | 0.8655 | **0.8531** (Optimal triage) |
+| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.8715 | 0.8579 | 0.8596 (ranking comparable, n.s.) |
+| **E-AURC** (excess vs oracle) $\downarrow$ | 0.2547 | **0.2404** | 0.3269 |
 
 ### Table 2: Clinical Selective Prediction & Referral Simulation (EXP-08)
 | Strategy | AURC $\downarrow$ | Retained Dice @ 100% | Retained Dice @ 90% | Retained Dice @ 80% | Retained Dice @ 70% |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Random Referral** | 0.8648 | 0.1368 | 0.1367 | 0.1379 | 0.1382 |
-| **Deterministic Entropy** | 0.8686 | 0.1368 | 0.1383 | 0.1391 | 0.1348 |
-| **MC Dropout Variance** | 0.8655 | 0.1363 | 0.1358 | 0.1360 | 0.1351 |
-| **Deep Ensemble MutInfo** | **0.8531** | **0.1766** | **0.1733** | **0.1548** | **0.1493** |
+| **Random Referral** | 0.8629 | 0.1368 | 0.1367 | 0.1379 | 0.1382 |
+| **Deterministic Entropy** | 0.8715 | 0.1368 | 0.1383 | 0.1391 | 0.1348 |
+| **MC Dropout Variance** | 0.8579 | 0.1363 | 0.1358 | 0.1360 | 0.1351 |
+| **Deep Ensemble MutInfo** | 0.8596 | **0.1766** | **0.1733** | **0.1548** | **0.1493** |
 
 ### Generated Publication Visualizations
 - **[Figure 1: Risk-Coverage Pareto Curves](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig1_risk_coverage_curves.png)**

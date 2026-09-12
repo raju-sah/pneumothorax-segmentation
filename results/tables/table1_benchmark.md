@@ -10,4 +10,5 @@
 | **AUROC-ED** (Error Detection) $\uparrow$ | **0.9900** | 0.5000 | 0.9617 |
 | **ESCE** (Calibration Error) $\downarrow$ | 0.0012 | 0.0012 | **0.0006** (50% reduction) |
 | **Brier Score** $\downarrow$ | 0.0001 | 0.0001 | 0.0001 |
-| **AURC** (Risk-Coverage) $\downarrow$ | 0.8686 | 0.8655 | **0.8531** (Best Pareto frontier) |
+| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.8715 | 0.8579 | 0.8596 (ranking comparable, n.s.) |
+| **E-AURC** (excess vs oracle) $\downarrow$ | 0.2547 | **0.2404** | 0.3269 |

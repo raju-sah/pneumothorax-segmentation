@@ -59,9 +59,9 @@
       <!-- Key Quantitative Stat Chips -->
       <div class="hero-stats-grid" id="hero-stats-grid">
         <div class="stat-card">
-          <div class="stat-value gradient-text-cyan">0.8531</div>
-          <div class="stat-label">Optimal AURC (Deep Ensemble)</div>
-          <div class="stat-detail">Superior selective triage frontier</div>
+          <div class="stat-value gradient-text-cyan">+0.040</div>
+          <div class="stat-label">Cohort DSC Gain, ens vs det (p &lt; 1e-4)</div>
+          <div class="stat-detail">95% CI [0.030, 0.050]; ranking comparable (AURC &asymp; 0.86)</div>
         </div>
         <div class="stat-card">
           <div class="stat-value gradient-text-emerald">50.0%</div>
@@ -335,7 +335,7 @@
             <div class="slider-ticks">
               <span>50% (High Human Review)</span>
               <span>75%</span>
-              <span>85% (Optimal Pareto)</span>
+              <span>85% (Reference operating point)</span>
               <span>100% (No Referral)</span>
             </div>
           </div>
@@ -379,10 +379,10 @@
               <i class="fa-solid fa-chart-area"></i> Empirical Risk-Coverage Curves ($N=2,135$)
             </div>
             <div class="chart-legend">
-              <span class="legend-item"><span class="legend-dot ens"></span> Deep Ensemble (AURC: 0.8531)</span>
-              <span class="legend-item"><span class="legend-dot mc"></span> MC Dropout (0.8655)</span>
-              <span class="legend-item"><span class="legend-dot det"></span> Deterministic (0.8686)</span>
-              <span class="legend-item"><span class="legend-dot rnd"></span> Random (0.8648)</span>
+              <span class="legend-item"><span class="legend-dot ens"></span> Deep Ensemble (AURC: 0.8596)</span>
+              <span class="legend-item"><span class="legend-dot mc"></span> MC Dropout (0.8579)</span>
+              <span class="legend-item"><span class="legend-dot det"></span> Deterministic (0.8715)</span>
+              <span class="legend-item"><span class="legend-dot rnd"></span> Random (0.8629)</span>
             </div>
           </div>
 
@@ -393,7 +393,7 @@
             </svg>
           </div>
           <div class="chart-footnote">
-            <i class="fa-solid fa-circle-info"></i> Vertical marker reflects current coverage selection (&Phi;). Lower Empirical Risk ($1 - DSC_{all}$) indicates superior selective triage capability. Deep Ensemble Pareto frontier consistently outperforms deterministic and MC Dropout baselines across all clinical operating points.
+            <i class="fa-solid fa-circle-info"></i> Vertical marker reflects current coverage selection (&Phi;). Lower Empirical Risk ($1 - DSC_{all}$) indicates superior selective triage capability. Ranking quality is comparable across methods under the standard risk-coverage definition (AURC &asymp; 0.86, n.s.); the ensemble curve sits lower because it retains higher cohort Dice at every coverage.
           </div>
         </div>
       </div>
@@ -498,10 +498,10 @@
                 </tr>
                 <tr>
                   <td><strong>AURC (Risk-Coverage Area) &downarrow;</strong></td>
-                  <td>0.8686</td>
-                  <td>0.8655</td>
-                  <td><span class="val-highlight success">0.8531 (Optimal)</span></td>
-                  <td>Best human-AI collaborative triage Pareto frontier</td>
+                  <td>0.8715</td>
+                  <td>0.8579</td>
+                  <td>0.8596</td>
+                  <td>Ranking comparable across methods (n.s.); ensemble wins on retained Dice</td>
                 </tr>
               </tbody>
             </table>
@@ -525,7 +525,7 @@
               <tbody>
                 <tr>
                   <td><strong>Random Referral Baseline</strong></td>
-                  <td>0.8648</td>
+                  <td>0.8629</td>
                   <td>0.1368</td>
                   <td>0.1367</td>
                   <td>0.1379</td>
@@ -533,7 +533,7 @@
                 </tr>
                 <tr>
                   <td><strong>Deterministic Entropy</strong></td>
-                  <td>0.8686</td>
+                  <td>0.8715</td>
                   <td>0.1368</td>
                   <td>0.1383</td>
                   <td>0.1391</td>
@@ -541,7 +541,7 @@
                 </tr>
                 <tr>
                   <td><strong>MC Dropout Variance</strong></td>
-                  <td>0.8655</td>
+                  <td>0.8579</td>
                   <td>0.1363</td>
                   <td>0.1358</td>
                   <td>0.1360</td>
@@ -549,7 +549,7 @@
                 </tr>
                 <tr class="row-champion">
                   <td><strong>Deep Ensemble Mutual Information</strong></td>
-                  <td><span class="val-highlight success">0.8531</span></td>
+                  <td>0.8596</td>
                   <td><span class="val-highlight success">0.1766</span></td>
                   <td><span class="val-highlight success">0.1733</span></td>
                   <td><span class="val-highlight success">0.1548</span></td>
@@ -651,7 +651,7 @@
           <div class="gallery-info">
             <div class="fig-number">Figure 1</div>
             <div class="fig-title">Risk-Coverage Selective Prediction Pareto Curves</div>
-            <p class="fig-desc">Pareto frontier showing Deep Ensemble outperforming deterministic baseline across all retention coverages.</p>
+            <p class="fig-desc">Risk-coverage curves under the standard definition; ranking comparable across methods while the ensemble retains higher cohort Dice at every coverage.</p>
           </div>
         </div>
 
@@ -735,7 +735,7 @@
         <div class="paper-abstract">
           <h4>Abstract</h4>
           <p>
-            Deep learning models for pneumothorax segmentation often exhibit severe overconfidence on thoracic confounders (e.g., skin folds, clavicular margins) and silent failures on occult apical lesions. In this study, we implement an uncertainty-aware segmentation framework on an audited cohort of 2,135 patient-isolated chest radiographs from the SIIM-ACR dataset with zero data leakage. We evaluate Monte Carlo Dropout and Deep Ensembles against a deterministic ResNet34 U-Net baseline. Deep Ensembles halve the Expected Spatial Calibration Error (ESCE: 0.0006 vs 0.0012) and achieve an optimal risk-coverage area (AURC: 0.8531). Furthermore, voxel-level mutual information successfully discriminates segmentation errors (AUROC-ED: 0.9617). By coupling dense epistemic uncertainty with a case-level selective prediction mechanism, our system routes ambiguous and occult cases to expert radiologists while safely automating high-confidence diagnoses, establishing a clinically viable human-AI collaborative triage pipeline.
+            Deep learning models for pneumothorax segmentation often exhibit severe overconfidence on thoracic confounders (e.g., skin folds, clavicular margins) and silent failures on occult apical lesions. In this study, we implement an uncertainty-aware segmentation framework on an audited cohort of 2,135 patient-isolated chest radiographs from the SIIM-ACR dataset with zero data leakage. We evaluate Monte Carlo Dropout and Deep Ensembles against a deterministic ResNet34 U-Net baseline. Deep Ensembles halve the Expected Spatial Calibration Error (ESCE: 0.0006 vs 0.0012) and retain significantly higher cohort segmentation quality (DSC_all: 0.1766 vs 0.1368, p &lt; 1e-4), with selective ranking comparable across methods (standard AURC &asymp; 0.86). Furthermore, voxel-level mutual information successfully discriminates segmentation errors (AUROC-ED: 0.9617). By coupling dense epistemic uncertainty with a case-level selective prediction mechanism, our system routes ambiguous and occult cases to expert radiologists while safely automating high-confidence diagnoses, establishing a clinically viable human-AI collaborative triage pipeline.
           </p>
         </div>
 
