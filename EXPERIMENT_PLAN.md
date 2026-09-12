@@ -29,7 +29,7 @@ This document specifies the experimental execution protocol for the entire proje
 ## EXP-03: Deterministic Segmentation Baseline
 
 - **Hypothesis**: A standard ResNet34 U-Net trained with $0.5 \cdot \text{BCE} + 0.5 \cdot \text{SoftDice}$ achieves competitive segmentation overlap ($\text{DSC}_{\text{pos}} \ge 0.75$), but exhibits high miscalibration (ESCE $> 0.12$) and silent false positives.
-- **Setup**: Train ResNet34 U-Net for 35 epochs on Fold 0 using AdamW ($lr=3e-4$, cosine annealing) and mixed precision (`torch.cuda.amp`).
+- **Setup**: Train ResNet34 U-Net for 35 epochs on Fold 0 using AdamW ($lr=3e-4$, cosine annealing) and mixed precision (`torch.cuda.amp`). *(Actual reported run: 10 epochs, $lr=10^{-4}$ — configs updated to match.)*
 - **Variables**: Random initialization seeds (42, 43, 44, 45, 46).
 - **Metrics**: $\text{DSC}_{\text{pos}}$, $\text{DSC}_{\text{all}}$, IoU, Sensitivity, Specificity, HD95, ESCE, Brier Score.
 - **Expected Interpretation**: Strong segmentation overlap on clear pneumothoraces, but overconfident probability estimates on skin folds and rib borders.
@@ -51,7 +51,7 @@ This document specifies the experimental execution protocol for the entire proje
 ## EXP-05: Deep Ensemble Formulation ($M=5$)
 
 - **Hypothesis**: Deep Ensembles capture epistemic uncertainty through diverse optimization trajectories, outperforming MC Dropout in calibration and boundary delineation.
-- **Setup**: Train 5 identical ResNet34 U-Nets across independent seeds (42–46). Compute ensemble mean prediction, mutual information, and ensemble variance.
+- **Setup**: Train 5 identical ResNet34 U-Nets across independent seeds (42–46). Compute ensemble mean prediction, mutual information, and ensemble variance. *(Actual reported run: $M=3$, seeds 42–44 — configs updated to match.)*
 - **Variables**: Ensemble size $M \in \{2, 3, 4, 5\}$.
 - **Metrics**: Ensemble $\text{DSC}_{\text{pos}}$, HD95, ESCE, Brier Score, Mutual Information.
 - **Expected Interpretation**: Ensemble improves $\text{DSC}_{\text{pos}}$ by $+0.02 - 0.04$ over single baseline and reduces ESCE by $> 30\%$.

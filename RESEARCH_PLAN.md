@@ -6,7 +6,7 @@ This project investigates whether predictive uncertainty in deep neural networks
 - **Target Clinical Problem**: Pneumothorax segmentation in 2D chest radiographs.
 - **Dataset**: SIIM-ACR Pneumothorax Segmentation challenge dataset (Stage 2 annotated cohort).
 - **Core Architecture**: ResNet34 U-Net ($512 \times 512$ resolution) with $0.5 \cdot \text{BCE} + 0.5 \cdot \text{SoftDice}$ loss.
-- **Uncertainty Paradigms**: Deterministic Baseline vs. Monte Carlo (MC) Dropout ($T=20$) vs. Deep Ensembles ($M=5$).
+- **Uncertainty Paradigms**: Deterministic Baseline vs. Monte Carlo (MC) Dropout ($T=20$) vs. Deep Ensembles ($M=3$, seeds 42–44, as actually run).
 - **Translational Deliverable**: Empirical Risk-Coverage Pareto frontiers demonstrating quantitative diagnostic gains when referring uncertain radiographs to thoracic radiologists.
 
 ---
@@ -40,7 +40,7 @@ This project investigates whether predictive uncertainty in deep neural networks
 
 - **RQ6: MC Dropout vs. Deep Ensembles**
   - *Question*: Which uncertainty approach is more reliable in clinical triage: MC Dropout or Deep Ensembles?
-  - *Hypothesis ($H_6$)*: Deep Ensembles ($M=5$) will achieve statistically superior calibration ($\text{ESCE}$) and lower $\text{AURC}$ than MC Dropout ($T=20$) ($p < 0.01$, Wilcoxon signed-rank test), justifying their $5\times$ training compute overhead for safety-critical deployment.
+  - *Hypothesis ($H_6$)*: Deep Ensembles ($M=3$, as actually run) will achieve statistically superior calibration ($\text{ESCE}$) and lower $\text{AURC}$ than MC Dropout ($T=20$) ($p < 0.01$, Wilcoxon signed-rank test), justifying their $3\times$ training compute overhead for safety-critical deployment.
 
 ---
 

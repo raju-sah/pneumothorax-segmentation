@@ -58,7 +58,7 @@ def set_seed(seed: int = 42) -> None:
 All hyperparameters, file paths, and execution flags are strictly decoupled from code and defined in YAML files under `configs/`:
 - `configs/baseline.yaml`: Deterministic baseline training parameters.
 - `configs/mc_dropout.yaml`: Spatial dropout rate, MC inference sample count ($T=20$).
-- `configs/ensemble.yaml`: Ensemble member count ($M=5$), seed array, and aggregation rules.
+- `configs/ensemble.yaml`: Ensemble member count ($M=3$, seeds 42–44, as actually run), seed array, and aggregation rules.
 
 ---
 

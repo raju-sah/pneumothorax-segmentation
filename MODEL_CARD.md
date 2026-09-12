@@ -6,7 +6,7 @@ Following the standardized model card framework proposed by Mitchell et al. (201
 
 ## 1. Model Details
 - **Model Name**: Uncertainty-Aware ResNet34 U-Net (Deterministic, MC Dropout, and Deep Ensemble variants).
-- **Architecture**: U-Net with ImageNet-pretrained ResNet34 encoder; Spatial Dropout (`p=0.2`) in decoder/bottleneck for MC Dropout; $M=5$ models for Deep Ensemble.
+- **Architecture**: U-Net with ImageNet-pretrained ResNet34 encoder; Spatial Dropout (`p=0.2`) in decoder/bottleneck for MC Dropout; $M=3$ models for Deep Ensemble (seeds 42, 43, 44 — as actually run; configs previously stated $M=5$).
 - **Input Resolution**: $512 \times 512 \times 1$ (Grayscale chest radiograph, normalized $[0, 1]$).
 - **Output**: Pixel-wise probability map $\hat{p} \in [0, 1]^{512 \times 512}$ and spatial epistemic uncertainty map $U(x) \in \mathbb{R}^{512 \times 512}$.
 - **Loss Function**: $0.5 \cdot \text{BCE} + 0.5 \cdot \text{SoftDice}$.

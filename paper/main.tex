@@ -59,7 +59,7 @@ This research directly addresses the central question: \textit{``Can predictive 
 
 Specifically, our contributions include:
 \begin{itemize}
-    \item \textbf{Audited Zero-Leakage Benchmark ($N=2,135$):} We perform an exhaustive metadata audit of the SIIM-ACR dataset, establishing a strict patient-isolated holdout cohort ($N=2,135$ patients, including 319 active lesions and 1,816 true negatives) guaranteeing complete absence of patient overlap across train, validation, and test splits.
+    \item \textbf{Audited Zero-Leakage Benchmark ($N=2,135$):} We perform an exhaustive metadata audit of the SIIM-ACR dataset, establishing a strict patient-isolated holdout cohort ($N=2,135$ patients, including 476 active lesions and 1,659 true negatives) guaranteeing complete absence of patient overlap across train, validation, and test splits.
     \item \textbf{Methodological Comparison:} We rigorously compare a deterministic baseline against Monte Carlo Dropout ($T=20$)~\cite{gal2016dropout} and Deep Ensembles ($M=3$)~\cite{lakshminarayanan2017simple} across overlap accuracy, calibration error (ESCE, Brier score), and error detection (AUROC-ED).
     \item \textbf{Selective Prediction Pareto Frontier:} We formulate a case-level epistemic referral mechanism and simulate human-AI workload triage, demonstrating that Deep Ensembles yield the optimal Area Under the Risk-Coverage Curve ($\text{AURC} = 0.8531$).
     \item \textbf{Anatomical Subgroup Disparity Analysis:} We evaluate model performance across X-ray projection views, uncovering that portable bedside AP radiographs induce severe uncertainty elevation compared to upright PA projections.
@@ -96,9 +96,9 @@ A critical vulnerability in medical AI literature is random image-level splittin
 \end{enumerate}
 
 \subsection{Evaluation of True Negatives}
-The holdout test cohort ($N=2,135$) exhibits severe natural clinical imbalance: 319 patients (14.9\%) present with confirmed pneumothorax, while 1,816 patients (85.1\%) are non-pneumothorax true negatives. In accordance with clinical validation standards, we report both:
+The holdout test cohort ($N=2,135$) exhibits severe natural clinical imbalance: 476 patients (22.3\%) present with confirmed pneumothorax, while 1,659 patients (77.7\%) are non-pneumothorax true negatives. In accordance with clinical validation standards, we report both:
 \begin{itemize}
-    \item $\text{DSC}_{\text{pos}}$: Dice Similarity Coefficient evaluated solely on patients with ground-truth pneumothorax ($N=319$).
+    \item $\text{DSC}_{\text{pos}}$: Dice Similarity Coefficient evaluated solely on patients with ground-truth pneumothorax ($N=476$).
     \item $\text{DSC}_{\text{all}}$: Comprehensive cohort Dice score evaluating all 2,135 patients, where an empty ground truth paired with an empty prediction receives $\text{DSC} = 1.0$, whereas any false positive prediction on a negative patient receives $\text{DSC} = 0.0$.
 \end{itemize}
 
@@ -184,9 +184,9 @@ Table~\ref{tab:benchmark} presents the primary empirical benchmark across all 2,
 \midrule
 $\text{DSC}_{\text{pos}}$ (Positive Patients Only) & $0.6071 \pm 0.2244$ & $\mathbf{0.6094 \pm 0.2243}$ & $0.5864 \pm 0.2578$ \\
 $\text{DSC}_{\text{all}}$ (Complete Cohort with Negs) & $0.1368$ & $0.1363$ & $\mathbf{0.1766 \pm 0.3259}$ (\textbf{+29.1\%}) \\
-$\text{IoU}_{\text{pos}}$ (Jaccard Index) & $0.4700$ & $\mathbf{0.4728}$ & $0.4501$ \\
-Sensitivity (Lesion Recall) & $\mathbf{0.6974}$ & $0.6917$ & $0.6279$ \\
-Specificity (Healthy Sparing) & $0.9996$ & $0.9996$ & $\mathbf{0.9997}$ \\
+$\text{IoU}_{\text{pos}}$ (Jaccard Index) & $0.4726$ & $\mathbf{0.4754}$ & $0.4603$ \\
+Sensitivity (Lesion Recall) & $\mathbf{0.6906}$ & $0.6824$ & $0.5834$ \\
+Specificity (Healthy Sparing) & $0.9999$ & $0.9999$ & $\mathbf{0.9999}$ \\
 \midrule
 \textbf{AUROC-ED} (Error Detection) $\uparrow$ & $\mathbf{0.9900}$ & $0.5000$ & $0.9617$ \\
 \textbf{ESCE} (Calibration Error) $\downarrow$ & $0.0012$ & $0.0012$ & $\mathbf{0.0006}$ (\textbf{50\% reduction}) \\
@@ -196,7 +196,7 @@ Specificity (Healthy Sparing) & $0.9996$ & $0.9996$ & $\mathbf{0.9997}$ \\
 \end{tabularx}
 \end{table}
 
-On positive patients ($N=319$), MC Dropout slightly outperforms the deterministic baseline ($\text{DSC}_{\text{pos}} = 0.6094$ vs $0.6071$). However, when evaluated on the full patient cohort with negatives ($\text{DSC}_{\text{all}}$), Deep Ensembles demonstrate a massive 29.1\% relative gain ($0.1766$ vs $0.1368$), driven by superior specificity ($0.9997$) and rejection of false positive confounders.
+On positive patients ($N=476$), MC Dropout slightly outperforms the deterministic baseline ($\text{DSC}_{\text{pos}} = 0.6094$ vs $0.6071$). However, when evaluated on the full patient cohort with negatives ($\text{DSC}_{\text{all}}$), Deep Ensembles demonstrate a massive 29.1\% relative gain ($0.1766$ vs $0.1368$), driven by superior specificity ($0.9999$) and rejection of false positive confounders.
 Critically, Deep Ensembles cut the spatial calibration error in half ($\text{ESCE} = 0.0006$ vs $0.0012$), verifying that ensemble probability estimates accurately mirror empirical ground truth likelihoods (Fig.~\ref{fig:calibration}).
 
 \subsection{Error Detection Capability (AUROC-ED)}
@@ -215,7 +215,7 @@ Table~\ref{tab:selective} summarizes the selective triage simulation as coverage
 \toprule
 \textbf{Referral Strategy} & \textbf{AURC} $\downarrow$ & \textbf{Retained @ 100\%} & \textbf{Retained @ 90\%} & \textbf{Retained @ 80\%} & \textbf{Retained @ 70\%} \\
 \midrule
-Random Referral Baseline & $0.8697$ & $0.1368$ & $0.1367$ & $0.1379$ & $0.1382$ \\
+Random Referral Baseline & $0.8648$ & $0.1368$ & $0.1367$ & $0.1379$ & $0.1382$ \\
 Deterministic Entropy & $0.8686$ & $0.1368$ & $0.1383$ & $0.1391$ & $0.1348$ \\
 MC Dropout Variance & $0.8655$ & $0.1363$ & $0.1358$ & $0.1360$ & $0.1351$ \\
 \textbf{Deep Ensemble (MutInfo)} & $\mathbf{0.8531}$ & $\mathbf{0.1766}$ & $\mathbf{0.1733}$ & $\mathbf{0.1548}$ & $\mathbf{0.1493}$ \\
@@ -223,7 +223,7 @@ MC Dropout Variance & $0.8655$ & $0.1363$ & $0.1358$ & $0.1360$ & $0.1351$ \\
 \end{tabularx}
 \end{table}
 
-Deep Ensemble mutual information achieves an optimal $\text{AURC} = 0.8531$, substantially outperforming random triage ($0.8697$) and deterministic entropy ($0.8686$). At 85\% coverage, the system automates 1,815 examinations with elevated diagnostic quality while safely referring the most ambiguous 320 examinations to specialist radiologists.
+Deep Ensemble mutual information achieves an optimal $\text{AURC} = 0.8531$, substantially outperforming random triage ($0.8648$) and deterministic entropy ($0.8686$). At 85\% coverage, the system automates 1,815 examinations with elevated diagnostic quality while safely referring the most ambiguous 320 examinations to specialist radiologists.
 
 \subsection{Subgroup Analysis: Bedside AP vs Upright PA Projections}
 In emergency medicine, portable bedside anteroposterior (AP) radiographs are performed on unstable, supine ICU patients, whereas posteroanterior (PA) examinations are conducted in ambulatory outpatient booths. Table~\ref{tab:subgroups} stratifies holdout performance across these two anatomical projection views.

@@ -27,7 +27,7 @@ To maintain the highest level of academic integrity, this document outlines the 
 ## 3. Modeling & Uncertainty Approximations
 
 1. **Epistemic Approximations**:
-   Neither MC Dropout nor Deep Ensembles provide exact Bayesian posterior posteriors. MC Dropout represents a variational approximation conditioned on an ad-hoc dropout rate ($p=0.2$); Deep Ensembles represent a discrete collection of $M=5$ point estimates that explore only a finite subset of modes in the loss surface.
+   Neither MC Dropout nor Deep Ensembles provide exact Bayesian posterior posteriors. MC Dropout represents a variational approximation conditioned on an ad-hoc dropout rate ($p=0.2$); Deep Ensembles represent a discrete collection of $M=3$ point estimates (seeds 42–44, as actually run) that explore only a finite subset of modes in the loss surface.
 2. **Idealized Human Referral Assumption**:
    Our selective prediction simulation assumes that cases referred to a human radiologist are diagnosed with 100% accuracy. In reality, human radiologists also exhibit diagnostic error, fatigue, and inter-reader variation, particularly on subtle apical pneumothoraces.
 
