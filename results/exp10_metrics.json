@@ -1,0 +1,71 @@
+{
+  "negative_control_discrimination_auroc": {
+    "deterministic_entropy": 0.5872,
+    "deep_ensemble_mutual_info": 0.5563,
+    "mc_dropout_variance": 0.6533
+  },
+  "negative_control_clean_rates": {
+    "n_negative_controls": 1659,
+    "det_clean_rate_05": 0.0627,
+    "det_clean_rate_tuned_025": 0.0603,
+    "ens_clean_rate_05": 0.3309,
+    "ens_clean_rate_tuned_025": 0.0555
+  },
+  "mean_case_uncertainty": {
+    "det_positive": 0.3544,
+    "det_negative_control": 0.3419,
+    "ens_positive": 0.0139,
+    "ens_negative_control": 0.0124
+  },
+  "lesion_size_stratification": {
+    "small (<2%)": {
+      "n": 380,
+      "pct_of_pos": 79.8,
+      "mean_lesion_pct": 0.68,
+      "det_dice_05": 0.3211,
+      "det_dice_tuned": 0.4513,
+      "det_gain_pct": 40.6,
+      "ens_dice_05": 0.3515,
+      "ens_dice_tuned": 0.4297,
+      "ens_gain_pct": 22.3,
+      "det_unc_mean": 0.355,
+      "ens_unc_mean": 0.0134
+    },
+    "medium (2-10%)": {
+      "n": 96,
+      "pct_of_pos": 20.2,
+      "mean_lesion_pct": 3.72,
+      "det_dice_05": 0.1189,
+      "det_dice_tuned": 0.303,
+      "det_gain_pct": 154.9,
+      "ens_dice_05": 0.1744,
+      "ens_dice_tuned": 0.3387,
+      "ens_gain_pct": 94.2,
+      "det_unc_mean": 0.3524,
+      "ens_unc_mean": 0.0161
+    },
+    "large (>10%)": {
+      "n": 0,
+      "pct_of_pos": 0.0,
+      "mean_lesion_pct": NaN,
+      "det_dice_05": NaN,
+      "det_dice_tuned": NaN,
+      "det_gain_pct": NaN,
+      "ens_dice_05": NaN,
+      "ens_dice_tuned": NaN,
+      "ens_gain_pct": NaN,
+      "det_unc_mean": NaN,
+      "ens_unc_mean": NaN
+    }
+  },
+  "lesion_size_vs_uncertainty_spearman": {
+    "deterministic": {
+      "rho": 0.0063,
+      "p_value": 0.8904088677157749
+    },
+    "ensemble": {
+      "rho": 0.0528,
+      "p_value": 0.2503977758738448
+    }
+  }
+}
