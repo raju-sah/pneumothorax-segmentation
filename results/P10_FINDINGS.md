@@ -19,6 +19,18 @@ Its AURC "win" is meaningless — do not claim it.
 - ens vs det DSC_all: Δ = +0.2163 [0.1989, 0.2352], Wilcoxon two-sided p = 2.3e-96.
 - ESCE/Brier now computed from the run (not the old hardcoded literals).
 
+## E-AURC (oracle-based, computed locally from `p10_predictions.csv`)
+
+| branch | AURC [95% CI] | oracle AURC | E-AURC |
+|---|---|---|---|
+| det | 0.7687 [0.7430, 0.7966] | 0.6656 | **0.1031** |
+| mc | 0.1525* [0.1342, 0.1729] | 0.0279 | 0.1247* |
+| ens | 0.7100 [0.6860, 0.7357] | 0.3119 | 0.3981 |
+
+det ranking CI sits well clear of its random baseline (0.8888). ens ranking is
+far from oracle (0.3981 excess) — consistent with the inverted-confident-end
+finding above. Bootstrap: 1000 case-level resamples, seed 42.
+
 ## Headline result: checkpoint-selection variance dominates
 
 Same seed 42, same code — only the selection rule changed:

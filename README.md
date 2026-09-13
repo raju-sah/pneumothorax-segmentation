@@ -111,7 +111,8 @@ All experiments (EXP-01 through EXP-10) were executed using the zero-leakage tes
 | **AUROC-ED** (Error Detection, global pixels) $\uparrow$ | **0.9936** | 0.9884 | 0.9929 |
 | **ESCE** (Calibration Error) $\downarrow$ | 0.00024 | 0.00015* | **0.00025** |
 | **Brier Score** $\downarrow$ | 0.00009 | 0.00008* | 0.00010 |
-| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.7687 | 0.1525* | **0.7100** |
+| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.7687 [0.743, 0.797] | 0.1525* | **0.7100** [0.686, 0.736] |
+| **E-AURC** (excess vs oracle) $\downarrow$ | **0.1031** | 0.1247* | 0.3981 |
 
 \*MC degenerate (near-empty masks); not wins. ens−det DSC_all Δ=+0.2163 [0.1989, 0.2352], Wilcoxon p=2.3e-96. See `results/P10_FINDINGS.md` — including the disclosed checkpoint-selection variance (same-seed DSC_pos 0.61→0.28 across selection rules).
 

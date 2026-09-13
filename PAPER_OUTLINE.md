@@ -60,9 +60,10 @@
 | **AUROC-ED** (Error Detection, global) $\uparrow$ | **0.9936** | 0.9884 | 0.9929 |
 | **ESCE** (Calibration Error) $\downarrow$ | 0.00024 | 0.00015* | **0.00025** |
 | **Brier Score** $\downarrow$ | 0.00009 | 0.00008* | 0.00010 |
-| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.7687 | 0.1525* | **0.7100** |
+| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.7687 [0.743, 0.797] | 0.1525* | **0.7100** [0.686, 0.736] |
+| **E-AURC** (excess vs oracle) $\downarrow$ | **0.1031** | 0.1247* | 0.3981 |
 
-\*MC degenerate. IoU/Sens/Spec/E-AURC from superseded run omitted.
+\*MC degenerate. IoU/Sens/Spec from superseded run omitted.
 
 ### Table 2: Clinical Selective Prediction & Human Referral Simulation (P10)
 | Referral Strategy | AURC $\downarrow$ | Retained Dice @ 100% | Retained Dice @ 90% | Retained Dice @ 80% | Retained Dice @ 70% |
