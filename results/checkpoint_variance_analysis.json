@@ -1,0 +1,108 @@
+{
+  "selection_rule_discrepancy": {
+    "42": {
+      "best_val_pos": {
+        "epoch": 10,
+        "val_all": 0.109,
+        "val_pos": 0.2675
+      },
+      "best_val_all": {
+        "epoch": 1,
+        "val_all": 0.7763,
+        "val_pos": 0.0
+      },
+      "val_pos_swing": 0.2675,
+      "val_all_swing": 0.6673
+    },
+    "43": {
+      "best_val_pos": {
+        "epoch": 10,
+        "val_all": 0.4042,
+        "val_pos": 0.2888
+      },
+      "best_val_all": {
+        "epoch": 2,
+        "val_all": 0.5509,
+        "val_pos": 0.0
+      },
+      "val_pos_swing": 0.2888,
+      "val_all_swing": 0.1467
+    },
+    "44": {
+      "best_val_pos": {
+        "epoch": 9,
+        "val_all": 0.2677,
+        "val_pos": 0.3984
+      },
+      "best_val_all": {
+        "epoch": 1,
+        "val_all": 0.7763,
+        "val_pos": 0.0
+      },
+      "val_pos_swing": 0.3984,
+      "val_all_swing": 0.5086
+    }
+  },
+  "late_epoch_stability": {
+    "42": {
+      "epochs_8_10_pos": [
+        0.256,
+        0.2452,
+        0.2675
+      ],
+      "mean": 0.2562,
+      "std": 0.0091,
+      "cv": 0.0355
+    },
+    "43": {
+      "epochs_8_10_pos": [
+        0.2165,
+        0.221,
+        0.2888
+      ],
+      "mean": 0.2421,
+      "std": 0.0331,
+      "cv": 0.1366
+    },
+    "44": {
+      "epochs_8_10_pos": [
+        0.2905,
+        0.3984,
+        0.2762
+      ],
+      "mean": 0.3217,
+      "std": 0.0545,
+      "cv": 0.1696
+    }
+  },
+  "inter_seed_variance": {
+    "seed_val_pos_values": [
+      0.2675,
+      0.2888,
+      0.3984
+    ],
+    "mean": 0.3182,
+    "std": 0.0573,
+    "cv": 0.1802
+  },
+  "mitigation_strategies": {
+    "1_multi_seed_ensembling": {
+      "description": "Deep Ensemble (M=3) averages out stochastic seed initialization and optimization divergence.",
+      "val_pos_ref": 0.3301,
+      "val_pos_tuned": 0.4183,
+      "benefit": "Ensemble validation score (0.4183) sits at the ceiling of individual seed performance with zero single-checkpoint fragility."
+    },
+    "2_stochastic_weight_averaging_temporal_averaging": {
+      "description": "Temporal averaging of weights across epochs 8, 9, and 10 or prediction averaging across final epochs.",
+      "target_epochs": [
+        8,
+        9,
+        10
+      ],
+      "rationale": "Mitigates within-seed epoch oscillation (where val_pos fluctuates between 0.27 and 0.40 in seed 44)."
+    },
+    "3_curriculum_or_lr_decay": {
+      "description": "Cosine decay with warm restarts instead of fixed lr=1e-3 AdamW to prevent late-stage loss hopping."
+    }
+  }
+}
