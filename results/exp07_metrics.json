@@ -1,0 +1,65 @@
+{
+  "tuned": {
+    "det": {
+      "T": 0.8585948944091797,
+      "t": 0.25
+    },
+    "ens": {
+      "T": 0.839775562286377,
+      "t": 0.25
+    }
+  },
+  "esce": {
+    "det": 0.000128,
+    "det05": 0.000128,
+    "ens": 0.000126,
+    "ens05": 0.000126
+  },
+  "brier": {
+    "det": 9e-05,
+    "det05": 9e-05,
+    "ens": 9.1e-05,
+    "ens05": 9.1e-05
+  },
+  "det_pix": {
+    "iou": 0.0805,
+    "sens": 0.3287,
+    "spec": 0.9998
+  },
+  "det05_pix": {
+    "iou": 0.0551,
+    "sens": 0.114,
+    "spec": 0.9999
+  },
+  "ens_pix": {
+    "iou": 0.0868,
+    "sens": 0.3539,
+    "spec": 0.9998
+  },
+  "ens05_pix": {
+    "iou": 0.0867,
+    "sens": 0.1752,
+    "spec": 0.9999
+  },
+  "det_dice_tuned_mean": 0.1408,
+  "det_dice_tuned_posmean": 0.4214,
+  "det_dice_05_mean": 0.1112,
+  "det_dice_05_posmean": 0.2803,
+  "ens_dice_tuned_mean": 0.1348,
+  "ens_dice_tuned_posmean": 0.4113,
+  "ens_dice_05_mean": 0.3275,
+  "ens_dice_05_posmean": 0.3158,
+  "det_dice_tuned_ci95": [
+    0.1294,
+    0.1518
+  ],
+  "ens_dice_tuned_ci95": [
+    0.1234,
+    0.1453
+  ],
+  "wilcoxon_tuned": 0.01097278042848167,
+  "det_dice_tuned_aurc": 0.7507,
+  "det_dice_tuned_eaurc": 0.1395,
+  "ens_dice_tuned_aurc": 0.8273,
+  "ens_dice_tuned_eaurc": 0.206
+}
