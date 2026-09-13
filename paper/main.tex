@@ -191,6 +191,33 @@ $\text{DSC}_{\text{all}}$ (Complete Cohort with Negs) & $0.1112$ $[0.101, 0.122]
 On positive patients ($N=476$), the Deep Ensemble leads ($\text{DSC}_{\text{pos}} = 0.3158$ vs $0.2803$ deterministic). On the full cohort, the ensemble retains dramatically higher quality ($\text{DSC}_{\text{all}} = 0.3275$ vs $0.1112$), because the deterministic checkpoint fires false-positive blobs on $\sim$94\% of negatives while the ensemble averages them away.
 Critically, the deterministic checkpoint is seed 42 under the verbatim best-val-$\text{DSC}_{\text{pos}}$ rule — the same seed previously scored $\text{DSC}_{\text{pos}} = 0.6071$ under best-val-$\text{DSC}_{\text{all}}$ selection. Same code, same seed, different rule: test $\text{DSC}_{\text{pos}}$ swings $0.61 \to 0.28$. Checkpoint-selection variance is therefore a first-order effect (see Limitations), larger than any method difference on overlap metrics.
 
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Table 1b: Post-Hoc Calibrated Benchmark (EXP-07 Temperature Scaling + Threshold Tuning, $t^* = 0.25$).}}
+\label{tab:calibrated_benchmark}
+\begin{tabularx}{\linewidth}{l X X X}
+\toprule
+\textbf{Evaluation Metric} & \textbf{Deterministic Tuned} & \textbf{Deep Ensemble Tuned} & \textbf{Tuned vs Ref Det $\Delta$} \\
+\midrule
+$\text{DSC}_{\text{pos}}$ (Positive Patients Only) & $\mathbf{0.4214}$ $[0.404, 0.439]$ & $0.4113$ $[0.392, 0.430]$ & $\mathbf{+0.1411}$ (+50.3\%) \\
+$\text{DSC}_{\text{all}}$ (Complete Cohort with Negs) & $0.1408$ $[0.129, 0.152]$ & $0.1348$ $[0.123, 0.145]$ & $+0.0296$ (+26.6\%) \\
+\midrule
+\textbf{Pixel Sensitivity} $\uparrow$ & $0.3287$ & $\mathbf{0.3539}$ & $\mathbf{+0.2147}$ (+188\%) \\
+\textbf{Pixel IoU} $\uparrow$ & $0.0805$ & $\mathbf{0.0868}$ & $+0.0254$ (+46.1\%) \\
+\textbf{ESCE} (Calibration Error) $\downarrow$ & $0.00013$ & $0.00013$ & $-0.00011$ \\
+\textbf{Brier Score} $\downarrow$ & $0.00009$ & $0.00009$ & $0.00000$ \\
+\textbf{AURC} (Risk-Coverage, standard) $\downarrow$ & $\mathbf{0.7507}$ & $0.8273$ & $-0.0180$ \\
+\textbf{E-AURC} (excess vs oracle) $\downarrow$ & $\mathbf{0.1395}$ & $0.2060$ & $+0.0364$ \\
+\bottomrule
+\end{tabularx}
+\\[2pt]
+{\footnotesize Fitted temperature parameters ($T_{\text{det}} = 0.86, T_{\text{ens}} = 0.84$) and operating threshold $t^* = 0.25$ obtained via validation set grid search on $\text{DSC}_{\text{pos}}$. Wilcoxon signed-rank test between tuned ensemble and deterministic models: $p = 0.0110$.}
+\end{table}
+
+\subsection{Operating Threshold Calibration (EXP-07)}
+Table~\ref{tab:calibrated_benchmark} presents the post-hoc calibrated benchmark after validation-based temperature scaling and operating threshold optimization ($t^* = 0.25$). Calibrating the decision boundary directly alleviates the severe sensitivity suppression caused by default thresholding ($t = 0.50$). On active pneumothorax lesions, deterministic performance jumps by $+50.3\%$ ($\text{DSC}_{\text{pos}} = 0.4214$ vs $0.2803$), and Deep Ensemble sensitivity more than doubles from $17.52\%$ to $35.39\%$ ($\text{DSC}_{\text{pos}} = 0.4113$), without requiring model retraining. Expected Spatial Calibration Error remains minimal ($\text{ESCE} \approx 1.3 \times 10^{-4}$).
+
 \subsection{Error Detection Capability (AUROC-ED)}
 In clinical segmentation, an uncertainty map is practically useful only if high uncertainty spatially co-localizes with segmentation errors (false positives and false negatives). As shown in Fig.~\ref{fig:auroc_ed}, uncertainty discriminates pixel errors near-perfectly on every branch ($\text{AUROC-ED} = 0.9936 / 0.9929 / 0.9884$ for deterministic / ensemble / MC, global pixel pooling). This revises the earlier mean-of-per-case finding ($\text{AUROC-ED} = 0.50$ for MC): per-case averaging with single-class fallback had masked the signal. Note the split implication — ranking pixels by uncertainty is excellent, yet the MC branch's near-zero variance magnitude ($\sim$$3 \times 10^{-6}$) makes it useless as a case-level signal, and the fixed $0.5$ operating point stays miscalibrated (Discussion).
 
