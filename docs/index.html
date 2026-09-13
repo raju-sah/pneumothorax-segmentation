@@ -415,6 +415,9 @@
         <button class="tab-btn active" id="tab-btn-1" data-tab="tab-table1">
           <i class="fa-solid fa-award"></i> Table 1: Primary Architecture Benchmark
         </button>
+        <button class="tab-btn" id="tab-btn-1b" data-tab="tab-table1b">
+          <i class="fa-solid fa-sliders"></i> Table 1b: Calibrated Benchmark (EXP-07)
+        </button>
         <button class="tab-btn" id="tab-btn-2" data-tab="tab-table2">
           <i class="fa-solid fa-arrow-trend-up"></i> Table 2: Selective Prediction Pareto Frontier
         </button>
@@ -490,6 +493,87 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Table 1b: Calibrated Benchmark (EXP-07) -->
+        <div class="tab-pane" id="tab-table1b">
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Evaluation Metric</th>
+                  <th>Deterministic Tuned ($T=0.86, t^*=0.25$)</th>
+                  <th>Deep Ensemble Tuned ($T=0.84, t^*=0.25$)</th>
+                  <th>Gain vs. Ref ($t=0.50$)</th>
+                  <th>Clinical Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Positive Dice ($DSC_{pos}$)</strong></td>
+                  <td><span class="val-highlight success">0.4214 [0.404, 0.439]</span></td>
+                  <td>0.4113 [0.392, 0.430]</td>
+                  <td><span class="val-highlight success">+50.3% (+0.141)</span></td>
+                  <td>Active pneumothorax cases only (N=476); massive boost via threshold calibration</td>
+                </tr>
+                <tr>
+                  <td><strong>Cohort Dice ($DSC_{all}$)</strong></td>
+                  <td>0.1408 [0.129, 0.152]</td>
+                  <td>0.1348 [0.123, 0.145]</td>
+                  <td>+26.6% (det) / -0.193 (ens)</td>
+                  <td>Evaluated across all 2,135 patients; reflects precision-recall tradeoff on true negatives</td>
+                </tr>
+                <tr>
+                  <td><strong>Pixel Sensitivity &uparrow;</strong></td>
+                  <td>0.3287</td>
+                  <td><span class="val-highlight success">0.3539</span></td>
+                  <td><span class="val-highlight success">+188% (det) / +102% (ens)</span></td>
+                  <td>Sensitivity nearly triples without retraining, resolving severe false negative suppression</td>
+                </tr>
+                <tr>
+                  <td><strong>Pixel IoU &uparrow;</strong></td>
+                  <td>0.0805</td>
+                  <td><span class="val-highlight success">0.0868</span></td>
+                  <td>+46.1% (det) / +0.1% (ens)</td>
+                  <td>Global intersection-over-union across positive voxels</td>
+                </tr>
+                <tr>
+                  <td><strong>ESCE (Calibration Error) &downarrow;</strong></td>
+                  <td><span class="val-highlight">0.00013</span></td>
+                  <td><span class="val-highlight">0.00013</span></td>
+                  <td>-46% improvement</td>
+                  <td>Expected Spatial Calibration Error across 10 confidence bins</td>
+                </tr>
+                <tr>
+                  <td><strong>Brier Score &downarrow;</strong></td>
+                  <td>0.00009</td>
+                  <td>0.00009</td>
+                  <td>Maintained</td>
+                  <td>Mean squared probability deviation</td>
+                </tr>
+                <tr>
+                  <td><strong>AURC (Selective Referral) &downarrow;</strong></td>
+                  <td><span class="val-highlight success">0.7507</span></td>
+                  <td>0.8273</td>
+                  <td>-0.0180 (det)</td>
+                  <td>Deterministic selective referral risk improves further under calibrated probabilities</td>
+                </tr>
+                <tr>
+                  <td><strong>E-AURC (Excess vs Oracle) &downarrow;</strong></td>
+                  <td><span class="val-highlight">0.1395</span></td>
+                  <td>0.2060</td>
+                  <td>Optimal ordering</td>
+                  <td>Distance from theoretical perfect oracle ordering</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout-card tip mt-3">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>EXP-07 Takeaway:</strong> Post-hoc temperature scaling ($T \approx 0.85$) and operating threshold tuning ($t^* = 0.25$) completely resolve the scale miscalibration of raw sigmoid probabilities. Lesion-positive Dice jumps from 0.2803 to 0.4214, nearly tripling sensitivity without retraining. Wilcoxon signed-rank test between tuned ensemble and deterministic: $p = 0.0110$.
+            </div>
           </div>
         </div>
 
@@ -656,6 +740,19 @@
             <div class="fig-number">Figure 3</div>
             <div class="fig-title">AP Bedside vs PA Upright Subgroup Disparity</div>
             <p class="fig-desc">Stratification across bedside portable radiographs (N=837) vs standard upright views (N=1,298).</p>
+          </div>
+        </div>
+
+        <!-- Fig 5 Threshold Curves -->
+        <div class="gallery-card" data-img="assets/exp07_threshold_curves.png" data-title="Figure 5: EXP-07 Validation Threshold Sweep & Temperature Calibration Curves">
+          <div class="gallery-img-wrapper">
+            <img src="assets/exp07_threshold_curves.png" alt="Figure 5: Threshold Sweep Curves" loading="lazy">
+            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
+          </div>
+          <div class="gallery-info">
+            <div class="fig-number">Figure 5 (EXP-07)</div>
+            <div class="fig-title">Validation Operating Threshold Sweep &amp; Calibration</div>
+            <p class="fig-desc">Operating threshold grid sweep on validation set under fitted temperature scaling. Star indicates the optimal threshold $t^* = 0.25$ that maximizes $DSC_{pos}$ (det: 0.428, ens: 0.418), translating to $+50.3\%$ test lesion Dice gain.</p>
           </div>
         </div>
 
