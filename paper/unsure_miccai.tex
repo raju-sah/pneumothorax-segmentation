@@ -1,0 +1,69 @@
+% LNCS format for MICCAI UNSURE Workshop submission
+\documentclass[runningheads]{llncs}
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{microtype}
+
+\graphicspath{{./}{../docs/assets/}}
+
+\begin{document}
+
+\title{Why Standard Uncertainty Fails in Pneumothorax AI: Magnitude Collapse, Selection Variance, and Operating Thresholds}
+\titlerunning{Uncertainty Diagnostics in Pneumothorax Segmentation}
+
+\author{Raju Sah\orcidID{0009-0000-0000-0000}}
+\authorrunning{R. Sah}
+\institute{Department of Computer Science \& Artificial Intelligence\\
+\email{raju.sah.research@gmail.com}\\
+\url{https://github.com/raju-sah/pneumothorax-segmentation}}
+
+\maketitle
+
+\begin{abstract}
+Predictive uncertainty quantification (UQ) is widely advocated as a prerequisite for safe clinical deployment in medical image segmentation. In this study, we present an audited empirical diagnostic of common UQ techniques on the SIIM-ACR Pneumothorax challenge dataset across 2,135 untouched holdout test patients with verified zero patient leakage. We evaluate deterministic ResNet34 U-Net baselines, Monte Carlo (MC) Dropout ($T=20$), and Deep Ensembles ($M=3$). Our analysis uncovers three critical failure modes overlooked in standard benchmarks: (1) \textbf{MC Dropout Magnitude Collapse:} Saturated sigmoid decoder outputs crush predictive variance ($\sim 3 \times 10^{-6}$), rendering test-time dropout sampling ineffective for dense segmentation triage; (2) \textbf{The Checkpoint Selection Illusion:} In severe class imbalance ($78\%$ negative scans), selecting validation checkpoints by whole-cohort Dice ($\text{val\_all}$) systematically selects untrained early epochs ($0.0$ lesion overlap), while positive-only selection ($\text{val\_pos}$) exposes models to a $0.33$ test Dice swing across epochs; and (3) \textbf{Operating-Point Miscalibration:} While global pixel-level error detection is near-perfect ($\text{AUROC-ED} \approx 0.99$), standard threshold-$0.50$ predictions severely suppress sensitivity ($11.4\%$). Post-hoc validation temperature scaling and threshold tuning ($t^* = 0.25$) surge lesion overlap from $0.2803$ to $0.4214$ ($+50.3\%$) and nearly triple sensitivity ($32.9\%$) without retraining. Our findings demonstrate that naive uncertainty metrics can provide false assurance, and we provide concrete recommendations for calibrated, human-in-the-loop thoracic radiology workflows.
+
+\keywords{Uncertainty Quantification \and Medical Image Calibration \and Pneumothorax Segmentation \and Selective Prediction \and Failure Mode Analysis.}
+\end{abstract}
+
+\section{Introduction}
+Deep neural networks deployed for emergency thoracic radiology frequently encounter subtle, occult pathologies (such as apical pneumothorax) and severe anatomical confounders (skin folds, rib contours). While uncertainty quantification (UQ) through Monte Carlo (MC) Dropout \cite{gal2016dropout} and Deep Ensembles \cite{lakshminarayanan2017simple} is standard in the literature, clinical translation remains hindered by unverified assumptions.
+
+In this work, we present an audited diagnostic benchmark on 2,135 patient-isolated radiographs, directly answering: \textit{Where do standard uncertainty formulations fail in dense clinical segmentation, and how can they be calibrated for selective human referral?}
+
+\section{Methodology and Benchmark Design}
+\subsection{Patient-Isolated Dataset Curation}
+To guarantee zero patient leakage, the 10,675 Stage 2 SIIM-ACR radiographs are partitioned strictly by \texttt{PatientID} extracted from DICOM metadata. All serial scans, bilateral views, and follow-ups from the same patient remain confined to a single split, leaving $N=2,135$ patients ($476$ positive, $1,659$ negative) in an untouched test holdout. Models are standardized on ResNet34 U-Nets at $512 \times 512$ resolution trained with $0.5 \cdot \text{BCE} + 0.5 \cdot \text{SoftDice}$.
+
+\subsection{Uncertainty Paradigms and Calibration}
+We evaluate three core paradigms:
+\begin{enumerate}
+    \item \textbf{Deterministic Baseline (seed 42):} Shannon predictive entropy $H(p) = -p\log_2 p - (1-p)\log_2(1-p)$.
+    \item \textbf{Monte Carlo Dropout ($T=20$):} Spatial dropout ($p=0.20$) in decoder blocks, computing predictive variance $\sigma^2_{\text{MC}} = \frac{1}{T}\sum (p_t - \bar{p})^2$.
+    \item \textbf{Deep Ensemble ($M=3$, seeds 42--44):} Multi-seed epistemic mutual information $I(Y; \theta \mid x) = H(\bar{p}) - \frac{1}{M}\sum H(p_m)$.
+\end{enumerate}
+Case-level uncertainty $U_{\text{case}}$ aggregates the top-$500$ most uncertain pixels to capture focal diagnostic doubt. Calibration is quantified via Expected Spatial Calibration Error (ESCE) across 10 confidence bins, and post-hoc temperature scaling ($T$) and threshold optimization ($t^*$) are fit on validation data.
+
+\section{Diagnostic Findings}
+
+\subsection{Diagnostic 1: MC Dropout Magnitude Collapse}
+While dropout hooks fire as expected, the empirical variance across $T=20$ passes collapses to a mean of $3.2 \times 10^{-6}$ (max $1.3 \times 10^{-3}$). Saturated sigmoid outputs in late decoder layers extinguish stochastic perturbation. Consequently, the MC branch predicts near-empty masks ($\text{DSC}_{\text{pos}} = 0.0176$), appearing falsely calibrated ($\text{DSC}_{\text{all}} = 0.7735 \approx 0.7770$ empty baseline). Test-time dropout cannot be relied upon for focal lesion triage.
+
+\subsection{Diagnostic 2: Checkpoint Selection Variance}
+Because $78\%$ of radiographs are negative, an untrained model predicting all zeros scores $\text{DSC}_{\text{all}} = 0.7763$. Selecting validation checkpoints by whole-cohort Dice ($\text{val\_all}$) systematically chooses Epoch 1 or 2 with zero learned pathology. Conversely, selecting by lesion Dice ($\text{val\_pos}$) correctly identifies trained weights, but uncovers severe intra-seed epoch oscillation (coefficient of variation up to $17\%$), swinging test $\text{DSC}_{\text{pos}}$ from $0.61 \to 0.28$ across identical seeds. Deep Ensembles ($M=3$) effectively stabilize this variance.
+
+\subsection{Diagnostic 3: Operating Point Miscalibration (EXP-07)}
+Global pixel error discrimination is near-perfect ($\text{AUROC-ED} \approx 0.9936$ for deterministic, $0.9929$ for ensemble), proving that uncertainty successfully ranks pixels. Yet, standard threshold-$0.50$ cutoffs achieve only $11.4\%$ sensitivity on active lesions.
+Optimizing threshold $t^* = 0.25$ under validation temperature scaling ($T_{\text{det}} = 0.86, T_{\text{ens}} = 0.84$) surges deterministic $\text{DSC}_{\text{pos}}$ from $0.2803$ to $\mathbf{0.4214}$ ($+50.3\%$) and triples sensitivity to $32.9\%$ (IoU $0.055 \to 0.081$). For Deep Ensembles, $\text{DSC}_{\text{pos}}$ reaches $0.4113$ with sensitivity more than doubling to $35.4\%$ ($p = 0.0110$, Wilcoxon signed-rank).
+
+\section{Conclusion}
+Our findings demonstrate that conventional uncertainty metrics can mask severe clinical failure modes. Deep Ensembles combined with validation threshold calibration provide a reliable, transparent foundation for selective human-AI referral in emergency thoracic radiology.
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
