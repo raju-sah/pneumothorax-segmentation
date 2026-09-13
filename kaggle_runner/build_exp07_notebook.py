@@ -59,9 +59,12 @@ class DetNet(nn.Module):
         self.model = smp.Unet(encoder_name="resnet34", encoder_weights="imagenet", in_channels=3, classes=1)
     def forward(self, x): return self.model(x)
 
-wmap = {os.path.basename(p).replace(".pt", ""): p
-        for p in glob.glob("/kaggle/input/p10-verbatim-checkpoints/*.pt")}
-print(sorted(wmap))
+_pt_cands = glob.glob("/kaggle/input/**/*.pt", recursive=True)
+print("Discovered .pt files:", _pt_cands)
+wmap = {os.path.basename(p).replace(".pt", ""): p for p in _pt_cands}
+print("Weights map keys:", sorted(wmap.keys()))
+if not ({"det_seed42", "det_seed43", "det_seed44"} <= set(wmap)):
+    print("ALL items in /kaggle/input:", glob.glob("/kaggle/input/**", recursive=True)[:100])
 assert {"det_seed42", "det_seed43", "det_seed44"} <= set(wmap), "P10 weights missing"
 def load_det(seed):
     m = DetNet().to(device)
