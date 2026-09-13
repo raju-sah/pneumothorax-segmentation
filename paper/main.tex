@@ -239,9 +239,9 @@ MC Dropout Variance$^*$ & $0.1525$ & $0.7735$ & $0.7968$ & $0.8122$ & $0.8266$ \
 \textbf{Deep Ensemble (MutInfo)} & $\mathbf{0.7100}$ & $\mathbf{0.3275}$ & $\mathbf{0.3228}$ & $\mathbf{0.3061}$ & $\mathbf{0.2914}$ \\
 \bottomrule
 \end{tabularx}
-\end{table}
 \\[2pt]
 {\footnotesize $^*$Degenerate: MC predicts near-empty masks, so retained ``risk'' trivially falls. Random baselines ($1 - $ mean $\text{DSC}_{\text{all}}$): det $0.8888$, ens $0.6725$, mc $0.2265$.}
+\end{table}
 
 Under the standard risk-coverage definition, referral by deterministic entropy genuinely helps ($0.7687$ vs $0.8888$ random), while referral by ensemble mutual information is worse than random ($0.7100$ vs $0.6725$): retained ensemble Dice \emph{falls} from $0.3275$ to $0.2914$ at 70\% coverage because the most confident ensemble cases are worse than average (Fig.~1). The ensemble's advantage is level, not ranking: it retains far higher cohort Dice than the baseline at every coverage (e.g.\ $0.3275$ vs $0.1112$ at $100\%$ coverage, $\Delta = +0.216$ $[0.199, 0.235]$, Wilcoxon $p = 2.3 \times 10^{-96}$). At 85\% coverage, the system automates 1,815 examinations at $\text{DSC}_{\text{all}} = 0.116$ while referring the most ambiguous 320 examinations to specialists.
 
@@ -268,9 +268,9 @@ In emergency medicine, portable bedside anteroposterior (AP) radiographs are per
 & & Deep Ensemble & $0.3339$ & $\mathbf{0.3286}$ & $0.0117$ \\
 \bottomrule
 \end{tabularx}
-\end{table}
 \\[2pt]
 {\footnotesize $^*$Degenerate near-empty predictions (see Table~1 note). Per-subgroup AUROC-ED is unavailable (pixel pools were saved globally only); global values are in Table~1.}
+\end{table}
 
 \begin{figure}[t]
     \centering
