@@ -1,0 +1,47 @@
+{
+  "esce": {
+    "det": 0.000244,
+    "ens": 0.000254,
+    "mc": 0.00015
+  },
+  "brier": {
+    "det": 9.3e-05,
+    "ens": 9.5e-05,
+    "mc": 8.3e-05
+  },
+  "auroc_global": {
+    "det": 0.9936,
+    "ens": 0.9929,
+    "mc": 0.9884
+  },
+  "means": {
+    "det_dice": 0.1112,
+    "mc_dice": 0.7735,
+    "ens_dice": 0.3275,
+    "mc_var_mean": 0.0
+  },
+  "pos_means": {
+    "det_dice": 0.2803,
+    "mc_dice": 0.0176,
+    "ens_dice": 0.3158
+  },
+  "det_dice_ci95": [
+    0.1006,
+    0.1215
+  ],
+  "mc_dice_ci95": [
+    0.7563,
+    0.791
+  ],
+  "ens_dice_ci95": [
+    0.3086,
+    0.3459
+  ],
+  "wilcoxon": {
+    "mc_det_p": 3.1488517922500514e-299,
+    "ens_det_p": 2.3395346434333843e-96
+  },
+  "det_aurc_std": 0.7687,
+  "ens_aurc_std": 0.71,
+  "mc_aurc_std": 0.1525
+}

@@ -494,20 +494,31 @@ function updateSimulator(coverage) {
   const referred = total - retained;
   const referredPct = (100 - coverage).toFixed(1);
 
-  // Calibrated threshold tau interpolation
-  // at 100% cov: tau = 0.350
-  // at 85% cov: tau = 0.0384
-  // at 70% cov: tau = 0.0210
-  // at 50% cov: tau = 0.0095
-  const normalizedCov = (coverage - 50) / 50.0;
-  const tau = 0.0095 + Math.pow(normalizedCov, 1.6) * (0.350 - 0.0095);
+  // Calibrated threshold tau: empirical det-entropy quantile at coverage
+  // P10: 50% -> 0.3511, 70% -> 0.3644, 85% -> 0.3748, 100% -> 0.5484
+  const tauPts = [[0.5, 0.3511], [0.7, 0.3644], [0.85, 0.3748], [1.0, 0.5484]];
+  let tau = tauPts[tauPts.length - 1][1];
+  for (let i = 0; i < tauPts.length - 1; i++) {
+    if (coverage / 100 >= tauPts[i][0] && coverage / 100 <= tauPts[i + 1][0]) {
+      const t = (coverage / 100 - tauPts[i][0]) / (tauPts[i + 1][0] - tauPts[i][0]);
+      tau = tauPts[i][1] + t * (tauPts[i + 1][1] - tauPts[i][1]);
+      break;
+    }
+  }
   document.getElementById('disp-threshold').innerText = `\u03C4 = ${tau.toFixed(4)} bits`;
 
-  // Retained DSC simulation
-  // Deep ensemble pos DSC improves as low-confidence cases are referred
-  // Full cohort DSC: 0.5864 at 100%, rising to 0.6650 at 70%
-  const simulatedDsc = 0.5864 + (1.0 - coverage / 100.0) * 0.26;
-  const dscDelta = ((simulatedDsc - 0.5864) / 0.5864 * 100.0).toFixed(1);
+  // Retained DSC: empirical deterministic DSC_all at coverage (P10)
+  // referral by det entropy genuinely helps: 0.1112 @100% -> 0.1439 @50%
+  const dscPts = [[0.5, 0.1439], [0.6, 0.1316], [0.7, 0.1222], [0.8, 0.1176], [0.9, 0.1142], [1.0, 0.1112]];
+  let simulatedDsc = dscPts[dscPts.length - 1][1];
+  for (let i = 0; i < dscPts.length - 1; i++) {
+    if (coverage / 100 >= dscPts[i][0] && coverage / 100 <= dscPts[i + 1][0]) {
+      const t = (coverage / 100 - dscPts[i][0]) / (dscPts[i + 1][0] - dscPts[i][0]);
+      simulatedDsc = dscPts[i][1] + t * (dscPts[i + 1][1] - dscPts[i][1]);
+      break;
+    }
+  }
+  const dscDelta = ((simulatedDsc - 0.1112) / 0.1112 * 100.0).toFixed(1);
 
   document.getElementById('kpi-retained-cases').innerText = retained.toLocaleString();
   document.getElementById('kpi-retained-pct').innerText = `${coverage.toFixed(1)}% of cohort`;
@@ -536,9 +547,9 @@ function drawRiskCoverageSVG() {
   const chartH = H - padTop - padBottom;
 
   // Domain: Coverage [0.5, 1.0] -> chartW
-  // Range: Empirical Risk (1 - DSC_all) [0.80, 0.88] -> chartH
+  // Range: Empirical Risk (1 - DSC_all) [0.60, 0.95] -> chartH (P10 verbatim run)
   const minCov = 0.50, maxCov = 1.00;
-  const minRisk = 0.80, maxRisk = 0.88;
+  const minRisk = 0.60, maxRisk = 0.95;
 
   function toX(cov) {
     return padLeft + ((cov - minCov) / (maxCov - minCov)) * chartW;
@@ -550,7 +561,7 @@ function drawRiskCoverageSVG() {
   // Grid lines
   let gridHTML = '';
   // Horizontal grid (Risk)
-  for (let r = 0.80; r <= 0.88; r += 0.02) {
+  for (let r = 0.60; r <= 0.951; r += 0.05) {
     const y = toY(r);
     gridHTML += `
       <line x1="${padLeft}" y1="${y}" x2="${W - padRight}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
@@ -573,17 +584,16 @@ function drawRiskCoverageSVG() {
     <text transform="translate(20, ${padTop + chartH / 2}) rotate(-90)" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">Empirical Risk (1 &minus; DSC<sub>all</sub>)</text>
   `;
 
-  // Empirical Curve Points (from scripts/regen_fig1.py, standard def)
+  // Empirical Curve Points (P10 verbatim run, standard def, N=2135)
   const coverages = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
 
-  // Random
-  const riskRnd = [0.863, 0.863, 0.863, 0.863, 0.863, 0.863];
-  // Deterministic
-  const riskDet = [0.862, 0.865, 0.865, 0.861, 0.862, 0.863];
-  // MC Dropout
-  const riskMC  = [0.867, 0.866, 0.866, 0.864, 0.864, 0.864];
-  // Deep Ensemble (higher retained Dice => lower risk level)
-  const riskEns = [0.858, 0.855, 0.851, 0.845, 0.827, 0.823];
+  // Random (flat at det mean risk)
+  const riskRnd = [0.8888, 0.8888, 0.8888, 0.8888, 0.8888, 0.8888];
+  // Deterministic entropy referral: risk falls as coverage drops (helps)
+  const riskDet = [0.8561, 0.8684, 0.8778, 0.8824, 0.8858, 0.8888];
+  // Deep Ensemble MI referral: risk RISES as coverage drops (worse than random)
+  const riskEns = [0.7291, 0.7171, 0.7086, 0.6939, 0.6772, 0.6725];
+  // MC omitted: degenerate near-empty predictions (not a valid curve)
 
   function buildPath(risks) {
     return coverages.map((c, i) => `${i === 0 ? 'M' : 'L'} ${toX(c).toFixed(1)} ${toY(risks[i]).toFixed(1)}`).join(' ');
@@ -591,7 +601,6 @@ function drawRiskCoverageSVG() {
 
   const pathRnd = buildPath(riskRnd);
   const pathDet = buildPath(riskDet);
-  const pathMC  = buildPath(riskMC);
   const pathEns = buildPath(riskEns);
 
   let curvesHTML = `
@@ -599,17 +608,15 @@ function drawRiskCoverageSVG() {
     <path d="${pathRnd}" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" opacity="0.8"/>
     <!-- Deterministic -->
     <path d="${pathDet}" fill="none" stroke="#f87171" stroke-width="2.2" opacity="0.9"/>
-    <!-- MC Dropout -->
-    <path d="${pathMC}" fill="none" stroke="#fbbf24" stroke-width="2.2" opacity="0.9"/>
     <!-- Deep Ensemble -->
     <path d="${pathEns}" fill="none" stroke="#38bdf8" stroke-width="3.5" filter="drop-shadow(0 0 6px rgba(56,189,248,0.5))"/>
   `;
 
-  // Interactive Marker Container
+  // Interactive Marker Container (tracks deterministic curve: the working referral branch)
   const markerHTML = `
     <g id="svg-coverage-cursor">
       <line id="cursor-line" x1="${toX(0.85)}" y1="${padTop}" x2="${toX(0.85)}" y2="${H - padBottom}" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3 3"/>
-      <circle id="cursor-point" cx="${toX(0.85)}" cy="${toY(0.836)}" r="6" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
+      <circle id="cursor-point" cx="${toX(0.85)}" cy="${toY(0.8841)}" r="6" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
     </g>
   `;
 
@@ -629,22 +636,22 @@ function updateSVGMarker(covPct) {
   const chartH = H - padTop - padBottom;
 
   const minCov = 0.50, maxCov = 1.00;
-  const minRisk = 0.80, maxRisk = 0.88;
+  const minRisk = 0.60, maxRisk = 0.95;
 
   const x = padLeft + ((cov - minCov) / (maxCov - minCov)) * chartW;
 
-  // Ensemble risk interpolated from empirical points (standard def)
-  const ensCov = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-  const ensRiskPts = [0.858, 0.855, 0.851, 0.845, 0.827, 0.823];
-  let ensRisk = ensRiskPts[ensRiskPts.length - 1];
-  for (let i = 0; i < ensCov.length - 1; i++) {
-    if (cov >= ensCov[i] && cov <= ensCov[i + 1]) {
-      const t = (cov - ensCov[i]) / (ensCov[i + 1] - ensCov[i]);
-      ensRisk = ensRiskPts[i] + t * (ensRiskPts[i + 1] - ensRiskPts[i]);
+  // Deterministic risk interpolated from empirical P10 points (standard def)
+  const detCov = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+  const detRiskPts = [0.8561, 0.8684, 0.8778, 0.8824, 0.8858, 0.8888];
+  let detRisk = detRiskPts[detRiskPts.length - 1];
+  for (let i = 0; i < detCov.length - 1; i++) {
+    if (cov >= detCov[i] && cov <= detCov[i + 1]) {
+      const t = (cov - detCov[i]) / (detCov[i + 1] - detCov[i]);
+      detRisk = detRiskPts[i] + t * (detRiskPts[i + 1] - detRiskPts[i]);
       break;
     }
   }
-  const y = padTop + ((maxRisk - ensRisk) / (maxRisk - minRisk)) * chartH;
+  const y = padTop + ((maxRisk - detRisk) / (maxRisk - minRisk)) * chartH;
 
   const line = document.getElementById('cursor-line');
   const point = document.getElementById('cursor-point');

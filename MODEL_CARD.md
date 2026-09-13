@@ -40,8 +40,9 @@ The model is explicitly benchmarked across:
 ---
 
 ## 5. Training & Evaluation Data
-- **Training Cohort**: 80% patient-grouped development partition of the 12,047 Stage 2 SIIM-ACR dataset.
-- **Evaluation Cohort**: 20% untouched patient-held-out test partition (~2,410 radiographs) with guaranteed zero patient overlap.
+- **Training Cohort**: patient-grouped development partition of 10,675 audited SIIM-ACR radiographs (train 6,832 / val 1,708).
+- **Evaluation Cohort**: 2,135 untouched patient-held-out test radiographs (476 pos / 1,659 neg) with verified zero patient overlap.
+- **Final (P10) test performance**: det DSC_all 0.1112 / DSC_pos 0.2803; ens 0.3275 / 0.3158; MC degenerate (near-empty). Global AUROC-ED ≈ 0.99 all branches. See `results/P10_FINDINGS.md`.
 
 ---
 

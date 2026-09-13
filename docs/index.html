@@ -59,24 +59,24 @@
       <!-- Key Quantitative Stat Chips -->
       <div class="hero-stats-grid" id="hero-stats-grid">
         <div class="stat-card">
-          <div class="stat-value gradient-text-cyan">+0.040</div>
-          <div class="stat-label">Cohort DSC Gain, ens vs det (p &lt; 1e-4)</div>
-          <div class="stat-detail">95% CI [0.030, 0.050]; ranking comparable (AURC &asymp; 0.86)</div>
+          <div class="stat-value gradient-text-cyan">+0.216</div>
+          <div class="stat-label">Cohort DSC Gain, ens vs det (p = 2.3e-96)</div>
+          <div class="stat-detail">95% CI [0.199, 0.235]; det referral helps (AURC 0.77 vs 0.89 random)</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value gradient-text-emerald">50.0%</div>
-          <div class="stat-label">ESCE Calibration Reduction</div>
-          <div class="stat-detail">0.0006 vs 0.0012 baseline</div>
+          <div class="stat-value gradient-text-emerald">0.9936</div>
+          <div class="stat-label">AUROC-ED Error Detection (global pixels)</div>
+          <div class="stat-detail">Pixel ranking near-perfect on all branches</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value gradient-text-amber">+29.1%</div>
-          <div class="stat-label">Cohort DSC Gain</div>
-          <div class="stat-detail">0.1766 vs 0.1368 deterministic</div>
+          <div class="stat-value gradient-text-amber">0.3275</div>
+          <div class="stat-label">Ensemble Cohort DSC (vs 0.1112 det)</div>
+          <div class="stat-detail">DSC_pos 0.3158; verbatim best-val-DSC_pos rule</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value gradient-text-violet">0.9617</div>
-          <div class="stat-label">AUROC-ED Error Detection</div>
-          <div class="stat-detail">Mutual information discriminator</div>
+          <div class="stat-value gradient-text-violet">0.61&rarr;0.28</div>
+          <div class="stat-label">Checkpoint-Variance Warning</div>
+          <div class="stat-detail">Same-seed DSC_pos swing across selection rules — disclosed</div>
         </div>
       </div>
 
@@ -312,7 +312,7 @@
         <div class="section-tag"><i class="fa-solid fa-sliders"></i> Risk-Coverage Trade-Off Optimization</div>
         <h2 class="section-title">Clinical Selective Prediction Simulator</h2>
         <p class="section-description">
-          Simulate autonomous deployment across the 2,135 holdout patients. Vary coverage &Phi; to observe how escalating uncertain cases improves retained segmentation quality and suppresses clinical risk.
+          Simulate autonomous deployment across the 2,135 holdout patients. Vary coverage &Phi; to observe how escalating uncertain cases by deterministic entropy improves retained segmentation quality and suppresses clinical risk. (Ensemble-MI referral is shown in the tables to be worse than random and is excluded from this simulator.)
         </p>
       </div>
 
@@ -360,9 +360,9 @@
               <div class="kpi-sub" id="kpi-referred-pct">15.0% triage rate</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-title">Retained Positive DSC</div>
-              <div class="kpi-number color-emerald" id="kpi-retained-dsc">0.6340</div>
-              <div class="kpi-sub">+4.8% over full cohort</div>
+              <div class="kpi-title">Retained Cohort DSC (det)</div>
+              <div class="kpi-number color-emerald" id="kpi-retained-dsc">0.1162</div>
+              <div class="kpi-sub">+4.5% over full cohort (0.1112)</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-title">Radiologist Relief</div>
@@ -379,10 +379,9 @@
               <i class="fa-solid fa-chart-area"></i> Empirical Risk-Coverage Curves ($N=2,135$)
             </div>
             <div class="chart-legend">
-              <span class="legend-item"><span class="legend-dot ens"></span> Deep Ensemble (AURC: 0.8596)</span>
-              <span class="legend-item"><span class="legend-dot mc"></span> MC Dropout (0.8579)</span>
-              <span class="legend-item"><span class="legend-dot det"></span> Deterministic (0.8715)</span>
-              <span class="legend-item"><span class="legend-dot rnd"></span> Random (0.8629)</span>
+              <span class="legend-item"><span class="legend-dot ens"></span> Deep Ensemble (AURC: 0.7100, worse than random)</span>
+              <span class="legend-item"><span class="legend-dot det"></span> Deterministic (0.7687)</span>
+              <span class="legend-item"><span class="legend-dot rnd"></span> Random (0.8888)</span>
             </div>
           </div>
 
@@ -393,7 +392,7 @@
             </svg>
           </div>
           <div class="chart-footnote">
-            <i class="fa-solid fa-circle-info"></i> Vertical marker reflects current coverage selection (&Phi;). Lower Empirical Risk ($1 - DSC_{all}$) indicates superior selective triage capability. Ranking quality is comparable across methods under the standard risk-coverage definition (AURC &asymp; 0.86, n.s.); the ensemble curve sits lower because it retains higher cohort Dice at every coverage.
+            <i class="fa-solid fa-circle-info"></i> Vertical marker reflects current coverage selection (&Phi;). Lower Empirical Risk ($1 - DSC_{all}$) indicates superior selective triage capability. Deterministic-entropy referral monotonically reduces risk (AURC 0.7687 vs 0.8888 random); ensemble-MI referral is worse than random (0.7100 vs 0.6725) — its most confident cases are worse than average. MC Dropout omitted: degenerate near-empty predictions.
           </div>
         </div>
       </div>
@@ -442,66 +441,45 @@
               <tbody>
                 <tr>
                   <td><strong>Positive Dice ($DSC_{pos}$)</strong></td>
-                  <td>0.6071 &plusmn; 0.2244</td>
-                  <td><span class="val-highlight">0.6094 &plusmn; 0.2243</span></td>
-                  <td>0.5864 &plusmn; 0.2578</td>
+                  <td>0.2803 [0.264, 0.297]</td>
+                  <td>0.0176* [0.010, 0.027]</td>
+                  <td><span class="val-highlight">0.3158 [0.292, 0.339]</span></td>
                   <td>Active pneumothorax cases only (N=476)</td>
                 </tr>
                 <tr>
                   <td><strong>Cohort Dice ($DSC_{all}$)</strong></td>
-                  <td>0.1368</td>
-                  <td>0.1363</td>
-                  <td><span class="val-highlight success">0.1766 &plusmn; 0.3259 (+29.1%)</span></td>
+                  <td>0.1112 [0.101, 0.122]</td>
+                  <td>0.7735*</td>
+                  <td><span class="val-highlight success">0.3275 [0.309, 0.346] (+0.216, p = 2.3e-96)</span></td>
                   <td>Evaluated across all 2,135 patients with true negatives</td>
                 </tr>
                 <tr>
-                  <td><strong>Jaccard Index ($IoU_{pos}$)</strong></td>
-                  <td>0.4726</td>
-                  <td><span class="val-highlight">0.4754</span></td>
-                  <td>0.4603</td>
-                  <td>Lesion intersection over union</td>
-                </tr>
-                <tr>
-                  <td><strong>Lesion Recall (Sensitivity)</strong></td>
-                  <td><span class="val-highlight">0.6906</span></td>
-                  <td>0.6824</td>
-                  <td>0.5834</td>
-                  <td>Sensitivity on positive patients</td>
-                </tr>
-                <tr>
-                  <td><strong>Healthy Sparing (Specificity)</strong></td>
-                  <td>0.9999</td>
-                  <td>0.9999</td>
-                  <td><span class="val-highlight success">0.9999</span></td>
-                  <td>Healthy lung tissue sparing</td>
-                </tr>
-                <tr>
-                  <td><strong>AUROC-ED (Error Detection) &uparrow;</strong></td>
-                  <td><span class="val-highlight">0.9900</span></td>
-                  <td>0.5000</td>
-                  <td>0.9617</td>
+                  <td><strong>AUROC-ED (Error Detection, global) &uparrow;</strong></td>
+                  <td><span class="val-highlight">0.9936</span></td>
+                  <td>0.9884</td>
+                  <td>0.9929</td>
                   <td>Discriminating pixel false positives & negatives</td>
                 </tr>
                 <tr>
                   <td><strong>ESCE (Calibration Error) &downarrow;</strong></td>
-                  <td>0.0012</td>
-                  <td>0.0012</td>
-                  <td><span class="val-highlight success">0.0006 (&minus;50.0%)</span></td>
-                  <td>Expected Spatial Calibration Error cut in half</td>
+                  <td>0.00024</td>
+                  <td>0.00015*</td>
+                  <td><span class="val-highlight success">0.00025</span></td>
+                  <td>Directly computed from final run (not hardcoded)</td>
                 </tr>
                 <tr>
                   <td><strong>Brier Score &downarrow;</strong></td>
-                  <td>0.0001</td>
-                  <td>0.0001</td>
-                  <td>0.0001</td>
+                  <td>0.00009</td>
+                  <td>0.00008*</td>
+                  <td>0.00010</td>
                   <td>Mean squared probability deviation</td>
                 </tr>
                 <tr>
                   <td><strong>AURC (Risk-Coverage Area) &downarrow;</strong></td>
-                  <td>0.8715</td>
-                  <td>0.8579</td>
-                  <td>0.8596</td>
-                  <td>Ranking comparable across methods (n.s.); ensemble wins on retained Dice</td>
+                  <td>0.7687</td>
+                  <td>0.1525*</td>
+                  <td>0.7100</td>
+                  <td>Det referral helps (vs 0.8888 random); ens-MI worse than random (0.6725)</td>
                 </tr>
               </tbody>
             </table>
@@ -525,35 +503,35 @@
               <tbody>
                 <tr>
                   <td><strong>Random Referral Baseline</strong></td>
-                  <td>0.8629</td>
-                  <td>0.1368</td>
-                  <td>0.1367</td>
-                  <td>0.1379</td>
-                  <td>0.1382</td>
+                  <td>0.8888</td>
+                  <td>0.1112</td>
+                  <td>0.1112</td>
+                  <td>0.1112</td>
+                  <td>0.1112</td>
                 </tr>
                 <tr>
                   <td><strong>Deterministic Entropy</strong></td>
-                  <td>0.8715</td>
-                  <td>0.1368</td>
-                  <td>0.1383</td>
-                  <td>0.1391</td>
-                  <td>0.1348</td>
+                  <td>0.7687</td>
+                  <td>0.1112</td>
+                  <td>0.1142</td>
+                  <td>0.1176</td>
+                  <td>0.1222</td>
                 </tr>
                 <tr>
-                  <td><strong>MC Dropout Variance</strong></td>
-                  <td>0.8579</td>
-                  <td>0.1363</td>
-                  <td>0.1358</td>
-                  <td>0.1360</td>
-                  <td>0.1351</td>
+                  <td><strong>MC Dropout Variance*</strong></td>
+                  <td>0.1525</td>
+                  <td>0.7735</td>
+                  <td>0.7968</td>
+                  <td>0.8122</td>
+                  <td>0.8266</td>
                 </tr>
                 <tr class="row-champion">
                   <td><strong>Deep Ensemble Mutual Information</strong></td>
-                  <td>0.8596</td>
-                  <td><span class="val-highlight success">0.1766</span></td>
-                  <td><span class="val-highlight success">0.1733</span></td>
-                  <td><span class="val-highlight success">0.1548</span></td>
-                  <td><span class="val-highlight success">0.1493</span></td>
+                  <td>0.7100</td>
+                  <td><span class="val-highlight success">0.3275</span></td>
+                  <td><span class="val-highlight success">0.3228</span></td>
+                  <td><span class="val-highlight success">0.3061</span></td>
+                  <td><span class="val-highlight success">0.2914</span></td>
                 </tr>
               </tbody>
             </table>
@@ -571,7 +549,6 @@
                   <th>Model Architecture</th>
                   <th>Positive Dice ($DSC_{pos}$)</th>
                   <th>Cohort Dice ($DSC_{all}$)</th>
-                  <th>AUROC-ED</th>
                   <th>Mean Case Uncertainty</th>
                 </tr>
               </thead>
@@ -580,47 +557,41 @@
                   <td rowspan="3"><strong>AP (Bedside Portable)</strong><br><span class="table-subnote">Supine / ICU trauma</span></td>
                   <td rowspan="3">837 (39.2%)</td>
                   <td>Deterministic Baseline</td>
-                  <td>0.6049</td>
-                  <td>0.1279</td>
-                  <td>0.9888</td>
-                  <td>0.3444</td>
+                  <td>0.2438</td>
+                  <td>0.0943</td>
+                  <td>0.3596</td>
                 </tr>
                 <tr>
-                  <td>MC Dropout (T=20)</td>
-                  <td><span class="val-highlight">0.6158</span></td>
-                  <td>0.1266</td>
-                  <td>0.5000</td>
-                  <td>0.0000</td>
+                  <td>MC Dropout (T=20)*</td>
+                  <td>0.0202</td>
+                  <td>0.7939</td>
+                  <td>0.0009</td>
                 </tr>
                 <tr>
                   <td>Deep Ensemble (M=3)</td>
-                  <td>0.5629</td>
-                  <td><span class="val-highlight success">0.1551</span></td>
-                  <td>0.9645</td>
-                  <td>0.0349</td>
+                  <td>0.2838</td>
+                  <td><span class="val-highlight success">0.3259</span></td>
+                  <td>0.0143</td>
                 </tr>
                 <tr class="table-divider">
                   <td rowspan="3"><strong>PA (Upright Standing)</strong><br><span class="table-subnote">Outpatient ambulatory</span></td>
                   <td rowspan="3">1,298 (60.8%)</td>
                   <td>Deterministic Baseline</td>
-                  <td>0.6083</td>
-                  <td>0.1425</td>
-                  <td>0.9909</td>
-                  <td>0.3380</td>
+                  <td>0.3009</td>
+                  <td>0.1221</td>
+                  <td>0.3351</td>
                 </tr>
                 <tr>
-                  <td>MC Dropout (T=20)</td>
-                  <td>0.6057</td>
-                  <td>0.1426</td>
-                  <td>0.5000</td>
-                  <td>0.0000</td>
+                  <td>MC Dropout (T=20)*</td>
+                  <td>0.0162</td>
+                  <td>0.7603</td>
+                  <td>0.0008</td>
                 </tr>
                 <tr>
                   <td>Deep Ensemble (M=3)</td>
-                  <td>0.5997</td>
-                  <td><span class="val-highlight success">0.1905</span></td>
-                  <td>0.9599</td>
-                  <td>0.0360</td>
+                  <td>0.3339</td>
+                  <td><span class="val-highlight success">0.3286</span></td>
+                  <td>0.0117</td>
                 </tr>
               </tbody>
             </table>
@@ -651,59 +622,46 @@
           <div class="gallery-info">
             <div class="fig-number">Figure 1</div>
             <div class="fig-title">Risk-Coverage Selective Prediction Pareto Curves</div>
-            <p class="fig-desc">Risk-coverage curves under the standard definition; ranking comparable across methods while the ensemble retains higher cohort Dice at every coverage.</p>
+            <p class="fig-desc">Standard risk-coverage curves (P10 verbatim run): deterministic-entropy referral reduces risk (AURC 0.7687); ensemble-MI ranking is worse than random (0.7100); MC omitted as degenerate.</p>
           </div>
         </div>
 
         <!-- Fig 2 -->
-        <div class="gallery-card" data-img="assets/fig2_calibration_curves.png" data-title="Figure 2: Reliability Diagrams & Expected Spatial Calibration Error">
+        <div class="gallery-card" data-img="assets/fig3_auroc_error_detection.png" data-title="Figure 2: ROC Curves for Pixel-Level Predictive Error Detection">
           <div class="gallery-img-wrapper">
-            <img src="assets/fig2_calibration_curves.png" alt="Figure 2: Calibration Diagrams" loading="lazy">
+            <img src="assets/fig3_auroc_error_detection.png" alt="Figure 2: Error Detection ROC" loading="lazy">
             <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
           </div>
           <div class="gallery-info">
             <div class="fig-number">Figure 2</div>
-            <div class="fig-title">Reliability Diagrams &amp; Spatial Calibration (ESCE)</div>
-            <p class="fig-desc">Deep ensemble reduces spatial calibration error by 50% (ESCE 0.0006 vs 0.0012).</p>
+            <div class="fig-title">ROC Curves for Predictive Error Detection (AUROC-ED)</div>
+            <p class="fig-desc">Empirical global pixel-pooled ROC (P10): uncertainty discriminates segmentation errors near-perfectly on all branches (det 0.9936 / ens 0.9929 / mc 0.9884). The superseded reliability-diagram panel was retired.</p>
           </div>
         </div>
 
         <!-- Fig 3 -->
-        <div class="gallery-card" data-img="assets/fig3_auroc_error_detection.png" data-title="Figure 3: ROC Curves for Pixel-Level Predictive Error Detection">
+        <div class="gallery-card" data-img="assets/fig4_ap_vs_pa_subgroups.png" data-title="Figure 3: AP Bedside vs PA Standing Subgroup Stratification">
           <div class="gallery-img-wrapper">
-            <img src="assets/fig3_auroc_error_detection.png" alt="Figure 3: Error Detection ROC" loading="lazy">
+            <img src="assets/fig4_ap_vs_pa_subgroups.png" alt="Figure 3: Subgroups Analysis" loading="lazy">
             <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
           </div>
           <div class="gallery-info">
             <div class="fig-number">Figure 3</div>
-            <div class="fig-title">ROC Curves for Predictive Error Detection (AUROC-ED)</div>
-            <p class="fig-desc">Discriminating segmentation error pixels via epistemic mutual information (AUROC: 0.9617).</p>
-          </div>
-        </div>
-
-        <!-- Fig 4 -->
-        <div class="gallery-card" data-img="assets/fig4_ap_vs_pa_subgroups.png" data-title="Figure 4: AP Bedside vs PA Standing Subgroup Stratification">
-          <div class="gallery-img-wrapper">
-            <img src="assets/fig4_ap_vs_pa_subgroups.png" alt="Figure 4: Subgroups Analysis" loading="lazy">
-            <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect High-Res</div>
-          </div>
-          <div class="gallery-info">
-            <div class="fig-number">Figure 4</div>
             <div class="fig-title">AP Bedside vs PA Upright Subgroup Disparity</div>
             <p class="fig-desc">Stratification across bedside portable radiographs (N=837) vs standard upright views (N=1,298).</p>
           </div>
         </div>
 
-        <!-- Fig 5 Full Width -->
-        <div class="gallery-card card-wide" data-img="assets/fig5_qualitative_uncertainty_maps.png" data-title="Figure 5: Five-Panel Qualitative Uncertainty Estimation Across Clinical Archetypes">
+        <!-- Fig 4 Full Width -->
+        <div class="gallery-card card-wide" data-img="assets/fig5_qualitative_uncertainty_maps.png" data-title="Figure 4: Five-Panel Qualitative Uncertainty Estimation Across Clinical Archetypes">
           <div class="gallery-img-wrapper">
-            <img src="assets/fig5_qualitative_uncertainty_maps.png" alt="Figure 5: Qualitative Maps" loading="lazy">
+            <img src="assets/fig5_qualitative_uncertainty_maps.png" alt="Figure 4: Qualitative Maps" loading="lazy">
             <div class="gallery-overlay"><i class="fa-solid fa-expand"></i> Inspect Full-Scale Panel (4800 &times; 4500 px)</div>
           </div>
           <div class="gallery-info">
-            <div class="fig-number">Figure 5 (Comprehensive Multi-Panel)</div>
+            <div class="fig-number">Figure 4 (Comprehensive Multi-Panel)</div>
             <div class="fig-title">Qualitative Uncertainty Estimation &amp; Triage Across Five Clinical Archetypes</div>
-            <p class="fig-desc">5&times;5 panel comparing raw chest radiographs, ground-truth annotations, deep ensemble predictions, epistemic mutual information maps, and discrepancy error maps for Confident Positive, Subtle Lesion, Skin Fold Confounder, Occult Lesion, and Healthy Lung.</p>
+            <p class="fig-desc">5&times;5 panel comparing raw chest radiographs, ground-truth annotations, deep ensemble predictions, epistemic mutual information maps, and discrepancy error maps for Confident Positive, Subtle Lesion, Skin Fold Confounder, Occult Lesion, and Healthy Lung. Panels rendered from pre-P10 checkpoints; illustrative patterns.</p>
           </div>
         </div>
       </div>
@@ -735,7 +693,7 @@
         <div class="paper-abstract">
           <h4>Abstract</h4>
           <p>
-            Deep learning models for pneumothorax segmentation often exhibit severe overconfidence on thoracic confounders (e.g., skin folds, clavicular margins) and silent failures on occult apical lesions. In this study, we implement an uncertainty-aware segmentation framework on an audited cohort of 2,135 patient-isolated chest radiographs from the SIIM-ACR dataset with zero data leakage. We evaluate Monte Carlo Dropout and Deep Ensembles against a deterministic ResNet34 U-Net baseline. Deep Ensembles halve the Expected Spatial Calibration Error (ESCE: 0.0006 vs 0.0012) and retain significantly higher cohort segmentation quality (DSC_all: 0.1766 vs 0.1368, p &lt; 1e-4), with selective ranking comparable across methods (standard AURC &asymp; 0.86). Furthermore, voxel-level mutual information successfully discriminates segmentation errors (AUROC-ED: 0.9617). By coupling dense epistemic uncertainty with a case-level selective prediction mechanism, our system routes ambiguous and occult cases to expert radiologists while safely automating high-confidence diagnoses, establishing a clinically viable human-AI collaborative triage pipeline.
+            Deep learning models for pneumothorax segmentation often exhibit severe overconfidence on thoracic confounders (e.g., skin folds, clavicular margins) and silent failures on occult apical lesions. In this study, we implement an uncertainty-aware segmentation framework on an audited cohort of 2,135 patient-isolated chest radiographs from the SIIM-ACR dataset with zero data leakage. We evaluate Monte Carlo Dropout (T=20) and Deep Ensembles (M=3) against a deterministic ResNet34 U-Net baseline under the verbatim best-validation-DSC_pos checkpoint rule. Deep Ensembles retain far higher cohort segmentation quality (DSC_all: 0.3275 vs 0.1112, p = 2.3e-96) with directly computed spatial calibration errors (ESCE &approx; 2.5e-4). Referral by deterministic entropy genuinely reduces risk (AURC 0.7687 vs 0.8888 random), while ensemble mutual-information ranking is worse than random (0.7100 vs 0.6725) — a caution against MI-over-unstable-seeds triage. Pixel-error ranking is near-perfect on all branches (global AUROC-ED &approx; 0.99), exposing a split between excellent ranking and a miscalibrated fixed-0.5 operating point. We disclose first-order checkpoint-selection variance (same-seed DSC_pos 0.61 &rarr; 0.28 across selection rules) and a degenerate MC branch. By coupling dense uncertainty with a case-level selective prediction mechanism, our system routes ambiguous and occult cases to expert radiologists while safely automating high-confidence diagnoses.
           </p>
         </div>
 

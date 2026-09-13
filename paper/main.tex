@@ -38,7 +38,7 @@
 \maketitle
 
 \begin{abstract}
-Automated segmentation of pneumothorax from chest radiographs offers immense clinical utility for emergency triage, yet uncalibrated deep neural networks exhibit severe vulnerability to thoracic confounders (e.g., skin folds, rib shadows) and catastrophic silent false negatives on subtle apical lesions. In high-stakes medical deployment, deep learning models must not only segment lesions accurately but also quantify their own predictive uncertainty to support selective prediction—autonomously reporting confident cases while routing ambiguous cases to expert radiologists. In this study, we establish an audited, patient-isolated benchmark on the SIIM-ACR Pneumothorax dataset ($N=2,135$ untouched holdout test patients with verified zero-leakage). We implement and rigorously compare a deterministic ResNet34 U-Net baseline against Monte Carlo Dropout ($T=20$) and Deep Ensembles ($M=3$). Our empirical findings reveal that Deep Ensembles reduce the Expected Spatial Calibration Error (ESCE) by 50\% ($0.0006$ vs $0.0012$) and retain significantly higher cohort segmentation quality ($\text{DSC}_{\text{all}} = 0.1766$ vs $0.1368$, $\Delta = +0.040$ $[0.030, 0.050]$, $p < 10^{-4}$). Selective-triage ranking quality is comparable across methods under the standard risk-coverage definition ($\text{AURC} \approx 0.86$; all paired $95\%$ CIs cross zero). Furthermore, dense epistemic mutual information effectively discriminates pixel-level segmentation errors ($\text{AUROC-ED} = 0.9617$). Subgroup stratification demonstrates that bedside portable anteroposterior (AP) radiographs exhibit systematically higher predictive uncertainty ($0.3444$ vs $0.3380$) and lower dice similarity than upright posteroanterior (PA) examinations, highlighting clinical projection bias. By coupling dense epistemic uncertainty with a calibrated case-level referral filter, our framework safely automates high-confidence diagnoses while escalating ambiguous and occult cases, presenting a clinically viable blueprint for human-AI collaborative thoracic radiology.
+Automated segmentation of pneumothorax from chest radiographs offers immense clinical utility for emergency triage, yet uncalibrated deep neural networks exhibit severe vulnerability to thoracic confounders (e.g., skin folds, rib shadows) and catastrophic silent false negatives on subtle apical lesions. In high-stakes medical deployment, deep learning models must not only segment lesions accurately but also quantify their own predictive uncertainty to support selective prediction—autonomously reporting confident cases while routing ambiguous cases to expert radiologists. In this study, we establish an audited, patient-isolated benchmark on the SIIM-ACR Pneumothorax dataset ($N=2,135$ untouched holdout test patients with verified zero-leakage). We implement and rigorously compare a deterministic ResNet34 U-Net baseline against Monte Carlo Dropout ($T=20$) and Deep Ensembles ($M=3$). Our empirical findings reveal that Deep Ensembles retain substantially higher cohort segmentation quality ($\text{DSC}_{\text{all}} = 0.3275$ vs $0.1112$, $\Delta = +0.216$ $[0.199, 0.235]$, Wilcoxon $p = 2.3 \times 10^{-96}$) with directly computed spatial calibration errors ($\text{ESCE} \approx 2.5 \times 10^{-4}$). Selective-triage ranking helps the deterministic baseline (standard $\text{AURC} = 0.7687$ vs $0.8888$ random) but uncertainty ranking via ensemble mutual information is worse than random ($\text{AURC} = 0.7100$ vs $0.6725$): the most confident ensemble cases are worse than average. Pixel-pooled error discrimination is near-perfect on all branches ($\text{AUROC-ED} \approx 0.99$), exposing a split between excellent ranking and a miscalibrated fixed $0.5$ operating point. A same-seed rerun under a different checkpoint-selection rule swings deterministic $\text{DSC}_{\text{pos}}$ from $0.61$ to $0.28$, so checkpoint-selection variance is reported as a first-order limitation. Subgroup stratification demonstrates that bedside portable anteroposterior (AP) radiographs exhibit systematically higher predictive uncertainty ($0.3596$ vs $0.3351$) and lower dice similarity than upright posteroanterior (PA) examinations, highlighting clinical projection bias. By coupling dense epistemic uncertainty with a calibrated case-level referral filter, our framework safely automates high-confidence diagnoses while escalating ambiguous and occult cases, presenting a clinically viable blueprint for human-AI collaborative thoracic radiology.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Pneumothorax Segmentation, Uncertainty Quantification, Deep Ensembles, Monte Carlo Dropout, Selective Prediction, Risk-Coverage Trade-off, Medical Image Calibration.
@@ -63,7 +63,7 @@ Specifically, our contributions include:
 \begin{itemize}
     \item \textbf{Audited Zero-Leakage Benchmark ($N=2,135$):} We perform an exhaustive metadata audit of the SIIM-ACR dataset, establishing a strict patient-isolated holdout cohort ($N=2,135$ patients, including 476 active lesions and 1,659 true negatives) guaranteeing complete absence of patient overlap across train, validation, and test splits.
     \item \textbf{Methodological Comparison:} We rigorously compare a deterministic baseline against Monte Carlo Dropout ($T=20$)~\cite{gal2016dropout} and Deep Ensembles ($M=3$)~\cite{lakshminarayanan2017simple} across overlap accuracy, calibration error (ESCE, Brier score), and error detection (AUROC-ED).
-    \item \textbf{Selective Prediction Analysis:} We formulate a case-level epistemic referral mechanism and simulate human-AI workload triage, finding comparable ranking quality across methods (standard $\text{AURC} \approx 0.86$, differences not significant) while Deep Ensembles retain significantly higher cohort Dice at every coverage level.
+    \item \textbf{Selective Prediction Analysis:} We formulate a case-level epistemic referral mechanism and simulate human-AI workload triage, finding that referral helps the deterministic baseline (standard $\text{AURC} = 0.7687$ vs $0.8888$ random) while ensemble mutual-information ranking is worse than random ($\text{AURC} = 0.7100$ vs $0.6725$); the ensemble's advantage is level, not ranking, retaining far higher cohort Dice at every coverage.
     \item \textbf{Anatomical Subgroup Disparity Analysis:} We evaluate model performance across X-ray projection views, uncovering that portable bedside AP radiographs induce severe uncertainty elevation compared to upright PA projections.
     \item \textbf{Open-Source Clinical Triage Studio:} We provide open-source code and an interactive, pure static web deployment for real-time visualization of dense uncertainty maps and clinical threshold simulation.
 \end{itemize}
@@ -85,7 +85,7 @@ The SIIM-ACR Pneumothorax Segmentation dataset comprises chest radiographs curat
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.85\linewidth]{fig1_risk_coverage_curves.png}
-    \caption{\textbf{Figure 1: Risk-Coverage Curves ($N=2,135$).} Empirical risk ($1 - \text{DSC}_{\text{all}}$) plotted against autonomous retention coverage $\Phi$ using the standard empirical coverage grid. Ranking quality is comparable across methods ($\text{AURC} \approx 0.86$); the ensemble curve sits lower because it retains higher cohort Dice at every coverage.}
+    \caption{\textbf{Figure 1: Risk-Coverage Curves ($N=2,135$).} Empirical risk ($1 - \text{DSC}_{\text{all}}$) against autonomous retention coverage $\Phi$ (standard definition). Deterministic entropy referral monotonically reduces risk ($\text{AURC} = 0.7687$). Ensemble mutual-information ranking is worse than random ($\text{AURC} = 0.7100$ vs $0.6725$): the most confident ensemble cases carry above-average risk. MC variance is degenerate (near-empty predictions, $\text{AURC} = 0.1525$) and must not be read as a win.}
     \label{fig:risk_coverage}
 \end{figure}
 
@@ -108,7 +108,7 @@ The holdout test cohort ($N=2,135$) exhibits severe natural clinical imbalance: 
 \label{sec:methodology}
 
 \subsection{Base Architecture}
-Our core architecture is a ResNet34 U-Net~\cite{ronneberger2015u, he2016deep}. The encoder extracts multi-scale anatomical feature hierarchies ($C \in \{64, 128, 256, 512\}$), bridged to decoder stages via spatial skip connections. To support MC Dropout, spatial 2D dropout layers ($p = 0.20$) are integrated into all decoder convolutional blocks. Models are trained on $512 \times 512$ radiographs using an AdamW optimizer ($\text{lr} = 10^{-3}$, weight decay $10^{-4}$, cosine annealing to $10^{-6}$) minimizing a combined Binary Cross-Entropy and Soft Dice loss:
+Our core architecture is a ResNet34 U-Net~\cite{ronneberger2015u, he2016deep}. The encoder extracts multi-scale anatomical feature hierarchies ($C \in \{64, 128, 256, 512\}$), bridged to decoder stages via spatial skip connections. To support MC Dropout, spatial 2D dropout layers ($p = 0.20$) are integrated into all decoder convolutional blocks. Models are trained on $512 \times 512$ radiographs using an AdamW optimizer ($\text{lr} = 10^{-3}$, weight decay $10^{-4}$, cosine annealing to $10^{-6}$) for 10 epochs, minimizing a combined Binary Cross-Entropy and Soft Dice loss:
 \begin{equation}
     \mathcal{L}_{\text{total}}(y, \hat{y}) = 0.5 \cdot \mathcal{L}_{\text{BCE}}(y, \hat{y}) + 0.5 \cdot \mathcal{L}_{\text{Dice}}(y, \hat{y})
 \end{equation}
@@ -126,7 +126,7 @@ We formulate and evaluate three distinct inference paradigms:
     \sigma_i^2 = \frac{1}{T} \sum_{t=1}^T (p_i^{(t)} - \bar{p}_i)^2
 \end{equation}
 
-\textbf{3. Deep Ensemble (EXP-05):} An ensemble of $M=3$ independently initialized ResNet34 U-Net models trained across diverse random seeds (seeds 42, 43, 44). For each pixel $i$, predictions are averaged: $\bar{p}_i = \frac{1}{M} \sum_{m=1}^M p_i^{(m)}$.
+\textbf{3. Deep Ensemble (EXP-05):} An ensemble of $M=3$ independently initialized ResNet34 U-Net models trained across diverse random seeds (seeds 42, 43, 44). For each pixel $i$, predictions are averaged: $\bar{p}_i = \frac{1}{M} \sum_{m=1}^M p_i^{(m)}$. Model selection follows the verbatim original protocol: the checkpoint maximizing validation $\text{DSC}_{\text{pos}}$ over the 10 epochs is retained per seed. The deterministic baseline reports seed 42; the ensemble averages seeds 42--44.
 Following information-theoretic principles~\cite{kendall2017uncertainties}, total predictive entropy $\mathcal{H}(\bar{p}_i)$ is decomposed into expected aleatoric data noise and epistemic model disagreement (Mutual Information $I$):
 \begin{equation}
     I(y_i; \mathcal{W} | x) = \mathcal{H}(\bar{p}_i) - \frac{1}{M} \sum_{m=1}^M \mathcal{H}(p_i^{(m)})
@@ -135,23 +135,13 @@ Mutual information isolates epistemic parameter uncertainty, approaching zero wh
 
 \begin{figure}[t]
     \centering
-    \begin{subfigure}[b]{0.48\linewidth}
-        \includegraphics[width=\linewidth]{fig2_calibration_curves.png}
-        \caption{Reliability Calibration Diagrams}
-        \label{fig:calibration}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\linewidth}
-        \includegraphics[width=\linewidth]{fig3_auroc_error_detection.png}
-        \caption{Pixel Error Detection ROC (AUROC-ED)}
-        \label{fig:auroc_ed}
-    \end{subfigure}
-    \caption{\textbf{Figure 2: Spatial Calibration and Error Detection.} (a) Deep Ensemble halves the Expected Spatial Calibration Error ($\text{ESCE} = 0.0006$). (b) Dense epistemic mutual information achieves $\text{AUROC-ED} = 0.9617$ for discriminating segmentation errors.}
-    \label{fig:cal_and_auroc}
+    \includegraphics[width=0.75\linewidth]{fig3_auroc_error_detection.png}
+    \caption{\textbf{Figure 2: Pixel Error Detection ROC (AUROC-ED).} Empirical global pixel-pooled ROC over $2{,}135 \times 128 \times 128$ sampled pixels. Uncertainty discriminates segmentation errors near-perfectly on every branch (det $0.9936$ / ens $0.9929$ / mc $0.9884$): pixel ranking is excellent even where the fixed $0.5$ operating point is miscalibrated. The prior reliability-diagram panel is omitted because it was rendered from superseded checkpoints; ESCE values in Table~\ref{tab:benchmark} are computed directly from the final run.}
+    \label{fig:auroc_ed}
 \end{figure}
 
 \subsection{Selective Prediction Framework}
-To translate dense uncertainty into patient-level clinical decision support, we define case-level uncertainty $\mathcal{U}_{\text{case}}$ as the 95th percentile of epistemic uncertainty within the thoracic region. For a specified autonomous retention coverage $\Phi \in (0, 1]$, a threshold $\tau(\Phi)$ is calibrated such that exactly $\Phi \cdot N$ cases satisfy $\mathcal{U}_{\text{case}} \le \tau(\Phi)$.
+To translate dense uncertainty into patient-level clinical decision support, we define case-level uncertainty $\mathcal{U}_{\text{case}}$ as the mean of the top-500 uncertainty pixels on the $4\times$-pooled ($128 \times 128$) map, matching the training-run implementation. For a specified autonomous retention coverage $\Phi \in (0, 1]$, a threshold $\tau(\Phi)$ is calibrated such that exactly $\Phi \cdot N$ cases satisfy $\mathcal{U}_{\text{case}} \le \tau(\Phi)$.
 The clinical referral policy operates as:
 \begin{equation}
     \text{Action}(x) = 
@@ -184,27 +174,24 @@ Table~\ref{tab:benchmark} presents the primary empirical benchmark across all 2,
 \toprule
 \textbf{Evaluation Metric} & \textbf{Deterministic} & \textbf{MC Dropout ($T=20$)} & \textbf{Deep Ensemble ($M=3$)} \\
 \midrule
-$\text{DSC}_{\text{pos}}$ (Positive Patients Only) & $0.6071$ $[0.586, 0.628]$ & $\mathbf{0.6094}$ $[0.588, 0.629]$ & $0.5864$ $[0.562, 0.610]$ \\
-$\text{DSC}_{\text{all}}$ (Complete Cohort with Negs) & $0.1368$ $[0.125, 0.149]$ & $0.1363$ $[0.125, 0.148]$ & $\mathbf{0.1766}$ $[0.163, 0.191]$ (\textbf{+29.1\%, $p < 10^{-4}$ vs det}) \\
-$\text{IoU}_{\text{pos}}$ (Jaccard Index) & $0.4726$ & $\mathbf{0.4754}$ & $0.4603$ \\
-Sensitivity (Lesion Recall) & $\mathbf{0.6906}$ & $0.6824$ & $0.5834$ \\
-Specificity (Healthy Sparing) & $0.9999$ & $0.9999$ & $\mathbf{0.9999}$ \\
+$\text{DSC}_{\text{pos}}$ (Positive Patients Only) & $0.2803$ $[0.264, 0.297]$ & $0.0176^*$ $[0.010, 0.027]$ & $\mathbf{0.3158}$ $[0.292, 0.339]$ \\
+$\text{DSC}_{\text{all}}$ (Complete Cohort with Negs) & $0.1112$ $[0.101, 0.122]$ & $0.7735^*$ $[0.756, 0.791]$ & $\mathbf{0.3275}$ $[0.309, 0.346]$ (\textbf{+0.216 $[0.199, 0.235]$, $p = 2.3 \times 10^{-96}$ vs det}) \\
 \midrule
-\textbf{AUROC-ED} (Error Detection) $\uparrow$ & $\mathbf{0.9900}$ & $0.5000$ & $0.9617$ \\
-\textbf{ESCE} (Calibration Error) $\downarrow$ & $0.0012$ & $0.0012$ & $\mathbf{0.0006}$ (\textbf{50\% reduction}) \\
-\textbf{Brier Score} $\downarrow$ & $0.0001$ & $0.0001$ & $0.0001$ \\
-\textbf{AURC} (Risk-Coverage, standard) $\downarrow$ & $0.8715$ & $0.8579$ & $0.8596$ \\
-\textbf{E-AURC} (excess vs oracle) $\downarrow$ & $0.2547$ & $\mathbf{0.2404}$ & $0.3269$ \\
+\textbf{AUROC-ED} (Error Detection, global pixels) $\uparrow$ & $\mathbf{0.9936}$ & $0.9884$ & $0.9929$ \\
+\textbf{ESCE} (Calibration Error) $\downarrow$ & $0.00024$ & $0.00015^*$ & $\mathbf{0.00025}$ \\
+\textbf{Brier Score} $\downarrow$ & $0.00009$ & $0.00008^*$ & $0.00010$ \\
+\textbf{AURC} (Risk-Coverage, standard) $\downarrow$ & $0.7687$ & $0.1525^*$ & $\mathbf{0.7100}$ \\
 \bottomrule
 \end{tabularx}
+\\[2pt]
+{\footnotesize $^*$MC branch is degenerate: it predicts near-empty masks ($0.7735 \approx 0.7770$ all-empty baseline; $\text{DSC}_{\text{pos}} = 0.0176$), so its DSC$_{\text{all}}$, ESCE, Brier and AURC values must not be read as wins. IoU/Sensitivity/Specificity from the superseded run are omitted (not recomputed under the verbatim rule).}
 \end{table}
 
-On positive patients ($N=476$), MC Dropout slightly outperforms the deterministic baseline ($\text{DSC}_{\text{pos}} = 0.6094$ vs $0.6071$). However, when evaluated on the full patient cohort with negatives ($\text{DSC}_{\text{all}}$), Deep Ensembles demonstrate a massive 29.1\% relative gain ($0.1766$ vs $0.1368$), driven by superior specificity ($0.9999$) and rejection of false positive confounders.
-Critically, Deep Ensembles cut the spatial calibration error in half ($\text{ESCE} = 0.0006$ vs $0.0012$), verifying that ensemble probability estimates accurately mirror empirical ground truth likelihoods (Fig.~\ref{fig:calibration}).
+On positive patients ($N=476$), the Deep Ensemble leads ($\text{DSC}_{\text{pos}} = 0.3158$ vs $0.2803$ deterministic). On the full cohort, the ensemble retains dramatically higher quality ($\text{DSC}_{\text{all}} = 0.3275$ vs $0.1112$), because the deterministic checkpoint fires false-positive blobs on $\sim$94\% of negatives while the ensemble averages them away.
+Critically, the deterministic checkpoint is seed 42 under the verbatim best-val-$\text{DSC}_{\text{pos}}$ rule — the same seed previously scored $\text{DSC}_{\text{pos}} = 0.6071$ under best-val-$\text{DSC}_{\text{all}}$ selection. Same code, same seed, different rule: test $\text{DSC}_{\text{pos}}$ swings $0.61 \to 0.28$. Checkpoint-selection variance is therefore a first-order effect (see Limitations), larger than any method difference on overlap metrics.
 
 \subsection{Error Detection Capability (AUROC-ED)}
-In clinical segmentation, an uncertainty map is practically useful only if high uncertainty spatially co-localizes with segmentation errors (false positives and false negatives). As shown in Fig.~\ref{fig:auroc_ed}, Deep Ensemble mutual information achieves $\text{AUROC-ED} = 0.9617$.
-In stark contrast, MC Dropout pixel variance yielded $\text{AUROC-ED} = 0.5000$ (equivalent to random guessing). Because spatial dropout perturbing decoder activations introduces diffuse variance across all feature maps rather than localized epistemic disagreement, MC Dropout fails as a pixel error discriminator.
+In clinical segmentation, an uncertainty map is practically useful only if high uncertainty spatially co-localizes with segmentation errors (false positives and false negatives). As shown in Fig.~\ref{fig:auroc_ed}, uncertainty discriminates pixel errors near-perfectly on every branch ($\text{AUROC-ED} = 0.9936 / 0.9929 / 0.9884$ for deterministic / ensemble / MC, global pixel pooling). This revises the earlier mean-of-per-case finding ($\text{AUROC-ED} = 0.50$ for MC): per-case averaging with single-class fallback had masked the signal. Note the split implication — ranking pixels by uncertainty is excellent, yet the MC branch's near-zero variance magnitude ($\sim$$3 \times 10^{-6}$) makes it useless as a case-level signal, and the fixed $0.5$ operating point stays miscalibrated (Discussion).
 
 \subsection{Selective Prediction Simulation}
 Table~\ref{tab:selective} summarizes the selective triage simulation as coverage decreases from 100\% down to 70\%.
@@ -218,15 +205,17 @@ Table~\ref{tab:selective} summarizes the selective triage simulation as coverage
 \toprule
 \textbf{Referral Strategy} & \textbf{AURC} $\downarrow$ & \textbf{Retained @ 100\%} & \textbf{Retained @ 90\%} & \textbf{Retained @ 80\%} & \textbf{Retained @ 70\%} \\
 \midrule
-Random Referral Baseline & $0.8629$ & $0.1368$ & $0.1367$ & $0.1379$ & $0.1382$ \\
-Deterministic Entropy & $0.8715$ & $0.1368$ & $0.1383$ & $0.1391$ & $0.1348$ \\
-MC Dropout Variance & $0.8579$ & $0.1363$ & $0.1358$ & $0.1360$ & $0.1351$ \\
-\textbf{Deep Ensemble (MutInfo)} & $0.8596$ & $\mathbf{0.1766}$ & $\mathbf{0.1733}$ & $\mathbf{0.1548}$ & $\mathbf{0.1493}$ \\
+Random Referral Baseline & $0.8888$ & $0.1112$ & $0.1112$ & $0.1112$ & $0.1112$ \\
+Deterministic Entropy & $0.7687$ & $0.1112$ & $0.1142$ & $0.1176$ & $0.1222$ \\
+MC Dropout Variance$^*$ & $0.1525$ & $0.7735$ & $0.7968$ & $0.8122$ & $0.8266$ \\
+\textbf{Deep Ensemble (MutInfo)} & $\mathbf{0.7100}$ & $\mathbf{0.3275}$ & $\mathbf{0.3228}$ & $\mathbf{0.3061}$ & $\mathbf{0.2914}$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+\\[2pt]
+{\footnotesize $^*$Degenerate: MC predicts near-empty masks, so retained ``risk'' trivially falls. Random baselines ($1 - $ mean $\text{DSC}_{\text{all}}$): det $0.8888$, ens $0.6725$, mc $0.2265$.}
 
-Under the standard risk-coverage definition (empirical coverage grid, no rescaling), ranking quality is comparable across methods ($\text{AURC} = 0.8715 / 0.8579 / 0.8596$ for deterministic / MC / ensemble; all paired bootstrap $95\%$ CIs cross zero), with MC Dropout numerically lowest. The ensemble's advantage is level, not ranking: it retains significantly higher cohort Dice at every coverage (e.g.\ $0.1766$ vs $0.1368$ at $100\%$ coverage, $\Delta = +0.040$ $[0.030, 0.050]$, Wilcoxon $p < 10^{-4}$). At 85\% coverage, the system automates 1,815 examinations with elevated diagnostic quality while safely referring the most ambiguous 320 examinations to specialist radiologists.
+Under the standard risk-coverage definition, referral by deterministic entropy genuinely helps ($0.7687$ vs $0.8888$ random), while referral by ensemble mutual information is worse than random ($0.7100$ vs $0.6725$): retained ensemble Dice \emph{falls} from $0.3275$ to $0.2914$ at 70\% coverage because the most confident ensemble cases are worse than average (Fig.~1). The ensemble's advantage is level, not ranking: it retains far higher cohort Dice than the baseline at every coverage (e.g.\ $0.3275$ vs $0.1112$ at $100\%$ coverage, $\Delta = +0.216$ $[0.199, 0.235]$, Wilcoxon $p = 2.3 \times 10^{-96}$). At 85\% coverage, the system automates 1,815 examinations at $\text{DSC}_{\text{all}} = 0.116$ while referring the most ambiguous 320 examinations to specialists.
 
 \subsection{Subgroup Analysis: Bedside AP vs Upright PA Projections}
 In emergency medicine, portable bedside anteroposterior (AP) radiographs are performed on unstable, supine ICU patients, whereas posteroanterior (PA) examinations are conducted in ambulatory outpatient booths. Table~\ref{tab:subgroups} stratifies holdout performance across these two anatomical projection views.
@@ -236,46 +225,48 @@ In emergency medicine, portable bedside anteroposterior (AP) radiographs are per
 \small
 \caption{\textbf{Table 3: Anatomical Subgroup Stratification Across Projection Views.}}
 \label{tab:subgroups}
-\begin{tabularx}{\linewidth}{l c l c c c c}
+\begin{tabularx}{\linewidth}{l c l c c c}
 \toprule
-\textbf{Projection View} & \textbf{Cases ($N$)} & \textbf{Model} & $\mathbf{DSC}_{\mathbf{pos}}$ & $\mathbf{DSC}_{\mathbf{all}}$ & \textbf{AUROC-ED} & \textbf{Mean $\mathcal{U}_{\mathbf{case}}$} \\
+\textbf{Projection View} & \textbf{Cases ($N$)} & \textbf{Model} & $\mathbf{DSC}_{\mathbf{pos}}$ & $\mathbf{DSC}_{\mathbf{all}}$ & \textbf{Mean $\mathcal{U}_{\mathbf{case}}$} \\
 \midrule
 \multirow{3}{*}{\textbf{AP (Bedside Portable)}} & \multirow{3}{*}{837 (39.2\%)} 
-  & Deterministic & $0.6049$ & $0.1279$ & $0.9888$ & $0.3444$ \\
-& & MC Dropout    & $\mathbf{0.6158}$ & $0.1266$ & $0.5000$ & $0.0000$ \\
-& & Deep Ensemble & $0.5629$ & $\mathbf{0.1551}$ & $0.9645$ & $0.0349$ \\
+  & Deterministic & $0.2438$ & $0.0943$ & $0.3596$ \\
+& & MC Dropout$^*$  & $0.0202$ & $0.7939$ & $0.0009$ \\
+& & Deep Ensemble & $0.2838$ & $\mathbf{0.3259}$ & $0.0143$ \\
 \midrule
 \multirow{3}{*}{\textbf{PA (Upright Standing)}} & \multirow{3}{*}{1,298 (60.8\%)} 
-  & Deterministic & $0.6083$ & $0.1425$ & $0.9909$ & $0.3380$ \\
-& & MC Dropout    & $0.6057$ & $0.1426$ & $0.5000$ & $0.0000$ \\
-& & Deep Ensemble & $0.5997$ & $\mathbf{0.1905}$ & $0.9599$ & $0.0360$ \\
+  & Deterministic & $0.3009$ & $0.1221$ & $0.3351$ \\
+& & MC Dropout$^*$    & $0.0162$ & $0.7603$ & $0.0008$ \\
+& & Deep Ensemble & $0.3339$ & $\mathbf{0.3286}$ & $0.0117$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+\\[2pt]
+{\footnotesize $^*$Degenerate near-empty predictions (see Table~1 note). Per-subgroup AUROC-ED is unavailable (pixel pools were saved globally only); global values are in Table~1.}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.75\linewidth]{fig4_ap_vs_pa_subgroups.png}
-    \caption{\textbf{Figure 4: Subgroup Performance Disparity Across Projection Views.} AP bedside radiographs exhibit systematically lower overlap accuracy and higher case uncertainty than upright PA views.}
+    \caption{\textbf{Figure 3: Subgroup Performance Disparity Across Projection Views.} AP bedside radiographs exhibit systematically lower overlap accuracy and higher case uncertainty than upright PA views.}
     \label{fig:subgroups}
 \end{figure}
 
-The empirical results confirm that bedside AP radiographs are inherently more challenging than PA radiographs ($\text{DSC}_{\text{pos}} = 0.5629$ vs $0.5997$; $\text{DSC}_{\text{all}} = 0.1551$ vs $0.1905$ for Deep Ensemble). Bedside portable imaging introduces severe magnifications of cardiac silhouettes, sub-optimal inspiration, and overlying monitoring devices. Notably, the deterministic model exhibits higher case uncertainty on AP views ($0.3444$ vs $0.3380$), reflecting the clinical difficulty of bedside evaluation (Fig.~\ref{fig:subgroups}).
+The empirical results confirm that bedside AP radiographs are inherently more challenging than PA radiographs ($\text{DSC}_{\text{pos}} = 0.2838$ vs $0.3339$; $\text{DSC}_{\text{all}} = 0.3259$ vs $0.3286$ for Deep Ensemble). Bedside portable imaging introduces severe magnifications of cardiac silhouettes, sub-optimal inspiration, and overlying monitoring devices. Notably, the deterministic model exhibits higher case uncertainty on AP views ($0.3596$ vs $0.3351$), reflecting the clinical difficulty of bedside evaluation (Fig.~\ref{fig:subgroups}).
 
 \subsection{Qualitative Visualization Across Clinical Archetypes}
-Fig.~\ref{fig:qualitative} illustrates 5 distinct clinical archetypes:
+Fig.~\ref{fig:qualitative} illustrates 5 distinct clinical archetypes (panels rendered from pre-P10 checkpoints; shown as illustrative patterns, not final-run quantities):
 \begin{enumerate}
-    \item \textbf{Case A (Confident True Positive):} A large apical pneumothorax where the model predicts the lesion accurately ($\text{DSC} = 0.884$). Mutual information is strictly confined to the visceral pleural boundary ($I = 0.12$), auto-accepted for reporting.
-    \item \textbf{Case B (Subtle Apical Lesion):} A faint apical crescent partially obscured by the clavicle ($\text{DSC} = 0.618$). High epistemic uncertainty across the apex ($I = 0.52$) correctly triggers human over-read.
-    \item \textbf{Case C (Skin Fold Confounder Rejection):} A portable AP radiograph with a lateral skin fold artifact. While a deterministic model predicts a false positive, Deep Ensemble members strongly disagree ($I = 0.76$), generating elevated case uncertainty ($\mathcal{U}_{\text{case}} = 0.0715$) that escalates the case to a specialist, suppressing a false alarm.
-    \item \textbf{Case D (Occult Lesion Escalation):} A supine AP radiograph with a deep sulcus basilar pneumothorax. Although segmentation under-segments the region ($\text{DSC} = 0.145$), epistemic uncertainty spikes dramatically ($I = 0.68$), successfully flagging the missed pathology for emergency review.
-    \item \textbf{Case E (Confident True Negative):} A healthy chest radiograph with zero activation and flat, near-zero uncertainty ($I < 0.005$), enabling autonomous negative discharge.
+    \item \textbf{Case A (Confident True Positive):} A large apical pneumothorax where the model predicts the lesion accurately. Mutual information is strictly confined to the visceral pleural boundary, auto-accepted for reporting.
+    \item \textbf{Case B (Subtle Apical Lesion):} A faint apical crescent partially obscured by the clavicle. Elevated epistemic uncertainty across the apex correctly triggers human over-read.
+    \item \textbf{Case C (Skin Fold Confounder Rejection):} A portable AP radiograph with a lateral skin fold artifact. While a deterministic model predicts a false positive, Deep Ensemble members disagree, generating elevated case uncertainty that escalates the case to a specialist, suppressing a false alarm.
+    \item \textbf{Case D (Occult Lesion Escalation):} A supine AP radiograph with a deep sulcus basilar pneumothorax. Although segmentation under-segments the region, epistemic uncertainty spikes dramatically, successfully flagging the missed pathology for emergency review.
+    \item \textbf{Case E (Confident True Negative):} A healthy chest radiograph with zero activation and flat, near-zero uncertainty, enabling autonomous negative discharge.
 \end{enumerate}
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=0.95\linewidth]{fig5_qualitative_uncertainty_maps.png}
-    \caption{\textbf{Figure 5: Qualitative Multi-Panel Diagnostics Across Five Clinical Archetypes.} Columns display: (1) Raw Chest Radiograph, (2) Ground Truth Annotation, (3) Ensemble Segmentation, (4) Dense Epistemic Mutual Information, and (5) Discrepancy Error Map.}
+    \caption{\textbf{Figure 4: Qualitative Multi-Panel Diagnostics Across Five Clinical Archetypes.} Columns display: (1) Raw Chest Radiograph, (2) Ground Truth Annotation, (3) Ensemble Segmentation, (4) Dense Epistemic Mutual Information, and (5) Discrepancy Error Map. Panels rendered from pre-P10 checkpoints; illustrative patterns, not final-run quantities.}
     \label{fig:qualitative}
 \end{figure}
 
@@ -284,17 +275,19 @@ Fig.~\ref{fig:qualitative} illustrates 5 distinct clinical archetypes:
 
 Our empirical findings yield vital insights for deploying clinical medical AI:
 
-\textbf{Why Deep Ensembles Halve Calibration Error.} Deep Ensembles explore diverse local minima in the non-convex loss landscape. Unlike MC Dropout, which explores local weight perturbations around a single minimum, ensembles combine predictions from genuinely distinct parameter modes. This diversity effectively suppresses idiosyncratic model hallucinations, directly explaining the 50\% ESCE calibration reduction and significantly higher retained cohort Dice.
+\textbf{Ranking is excellent, the operating point is not.} Global pixel-pooled $\text{AUROC-ED} \approx 0.99$ on all branches proves uncertainty orders pixels near-perfectly — yet threshold-$0.5$ Dice stays poor. The failure is scale miscalibration of the outputs, not failure to localize doubt. Temperature scaling (planned EXP-07) and per-branch threshold tuning are the direct next steps, strictly more promising than further ranking work.
 
-\textbf{Failure of MC Dropout for Error Detection.} While MC Dropout remains computationally attractive at training time, its spatial variance failed completely to discriminate pixel errors ($\text{AUROC-ED} = 0.5000$). Test-time dropout primarily captures activation noise rather than semantic anatomical disagreement. For safety-critical segmentation, multi-checkpoint or multi-seed ensembling is strongly recommended over dropout sampling.
+\textbf{Why referral helps deterministic entropy but hurts ensemble MI.} The three ensemble seeds train unstably ($\text{lr} = 10^{-3}$; validation scores oscillate $0.0$--$0.78$ across epochs), so members often agree confidently on wrong — mostly empty — masks. Mutual information then ranks the most-confident cases first and they are worse than average (Fig.~1, risk spike at low coverage). Deterministic entropy, a pure output-sharpness signal, degrades more gracefully. MI-over-unstable-seeds is not a reliable referral signal.
+
+\textbf{Failure of MC Dropout as a case-level signal.} Test-time dropout ($p = 0.20$ hooks on all decoder blocks) is functional but magnitude-collapsed: mean predictive variance $\sim$$3 \times 10^{-6}$. Saturated sigmoid outputs crush the stochastic spread, so $T=20$ passes are near-identical and the mean predicts empty ($\text{DSC}_{\text{pos}} = 0.0176$). For safety-critical segmentation, multi-seed ensembling is recommended over dropout sampling — with the MI caveat above.
 
 \textbf{Clinical Translation and Limitations.} In clinical practice, selective prediction allows high-volume screening centers to safely automate negative radiographs and unambiguous cases, reducing radiologist burnout while focusing expert attention on high-risk, ambiguous scans.
-Limitations of this study include reliance on a single multi-institutional dataset and the inherent 2D projection collapse of 3D thoracic anatomy. Future work will investigate vision-language models for explanatory uncertainty rationales and prospective clinical trials.
+Limitations, stated plainly: (1) \emph{Checkpoint-selection variance dominates.} Same seed 42 scores test $\text{DSC}_{\text{pos}} = 0.61$ under best-val-$\text{DSC}_{\text{all}}$ selection vs $0.28$ under verbatim best-val-$\text{DSC}_{\text{pos}}$; single-checkpoint overlap claims are fragile and multi-checkpoint averaging is required future work. (2) \emph{Single dataset, no external validation; $512 \times 512$ only; $M=3$, $T=20$.} (3) \emph{MC branch degenerate} as above. (4) \emph{No temperature scaling / threshold tuning yet} — the most likely lever for the ranking-vs-operating-point gap. (5) \emph{ESCE remains pixel-pooled} (background-washed); lesion-conditioned ECE with CIs is pending. (6) \emph{Qualitative panels (Fig.~5) predate the final checkpoints} and are illustrative. Future work: stabilized schedules, vision-language explanatory rationales, prospective trials.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this study, we established an audited, patient-isolated benchmark on 2,135 chest radiographs to evaluate uncertainty quantification and selective prediction for pneumothorax segmentation. Deep Ensembles halved spatial calibration error ($\text{ESCE} = 0.0006$), discriminated pixel-level errors ($\text{AUROC-ED} = 0.9617$), and retained significantly higher cohort segmentation quality at every triage coverage ($\Delta\text{DSC}_{\text{all}} = +0.040$, $p < 10^{-4}$), with selective ranking comparable across methods (standard $\text{AURC} \approx 0.86$). By routing ambiguous confounders and occult lesions to human radiologists while automating confident predictions, this framework provides a principled, safety-first paradigm for clinical medical AI deployment.
+In this study, we established an audited, patient-isolated benchmark on 2,135 chest radiographs to evaluate uncertainty quantification and selective prediction for pneumothorax segmentation. Deep Ensembles retained far higher cohort segmentation quality ($\text{DSC}_{\text{all}} = 0.3275$ vs $0.1112$, $\Delta = +0.216$, $p = 2.3 \times 10^{-96}$) with directly computed spatial calibration errors ($\text{ESCE} \approx 2.5 \times 10^{-4}$), and pixel-error ranking is near-perfect on all branches (global $\text{AUROC-ED} \approx 0.99$). Selective referral by deterministic entropy genuinely reduces risk ($\text{AURC} = 0.7687$ vs $0.8888$ random), while ensemble mutual-information ranking is worse than random — a caution against MI-over-unstable-seeds as a triage signal. Our central cautionary finding is that checkpoint-selection variance dominates overlap metrics (same-seed $\text{DSC}_{\text{pos}}$ $0.61 \to 0.28$ across selection rules), which we disclose rather than hide. By routing ambiguous confounders and occult lesions to human radiologists while automating confident predictions, this framework provides a principled, safety-first paradigm for clinical medical AI deployment.
 
 \bibliographystyle{plain}
 \bibliography{references}

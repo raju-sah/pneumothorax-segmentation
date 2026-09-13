@@ -22,7 +22,7 @@ This project addresses six central research questions:
 3. **RQ3 (Failure Modes)**: Can epistemic uncertainty identify radiological confounders (pseudopneumothorax)?
 4. **RQ4 (Lesion Difficulty)**: Does uncertainty elevate for subtle, small pneumothoraces ($<2\%$ hemithorax) and portable AP projections?
 5. **RQ5 (Selective Prediction)**: Can uncertainty support automated clinical referral, improving the diagnostic accuracy of autonomously retained cases?
-6. **RQ6 (MC Dropout vs. Ensembles)**: Does a 5-member Deep Ensemble justify its $5\times$ training cost over a 20-pass Monte Carlo Dropout model for clinical triage?
+6. **RQ6 (MC Dropout vs. Ensembles)**: Does a 3-member Deep Ensemble justify its $3\times$ training cost over a 20-pass Monte Carlo Dropout model for clinical triage?
 
 ---
 
@@ -63,7 +63,7 @@ All research decisions, dataset audits, mathematical formulations, and protocols
               ┌───────────────────────┼───────────────────────┐
               ▼                       ▼                       ▼
     [Method A: Baseline]      [Method B: MC Dropout]   [Method C: Deep Ensemble]
-      Single Pass T=1           Spatial Dropout p=0.2     5 Diverse Model Seeds
+      Single Pass T=1           Spatial Dropout p=0.2     3 Diverse Model Seeds
       Naive Shannon Entropy     T=20 Stochastic Passes    Mutual Information & Var
               │                       │                       │
               └───────────────────────┼───────────────────────┘
@@ -103,34 +103,31 @@ pytest tests/ -v
 
 All experiments (EXP-01 through EXP-10) were executed using the zero-leakage test holdout ($2,135$ radiographs, $22.3\%$ positive prevalence):
 
-### Table 1: Primary Experimental Benchmark
-| Evaluation Metric | Deterministic Baseline (EXP-03) | MC Dropout ($T=20$) (EXP-04) | Deep Ensemble ($M=3$) (EXP-05) |
+### Table 1: Primary Experimental Benchmark (P10 verbatim run, $N=2,135$)
+| Evaluation Metric | Deterministic Baseline (seed 42) | MC Dropout ($T=20$) (seed 42) | Deep Ensemble ($M=3$) |
 | :--- | :---: | :---: | :---: |
-| **$\text{DSC}_{\text{pos}}$** (Positive Cases) | 0.6071 $\pm$ 0.2244 | **0.6094 $\pm$ 0.2243** | 0.5864 $\pm$ 0.2578 |
-| **$\text{DSC}_{\text{all}}$** (Overall Cohort) | 0.1368 $\pm$ 0.2759 | 0.1363 $\pm$ 0.2755 | **0.1766 $\pm$ 0.3259** |
-| **$\text{IoU}_{\text{pos}}$** (Jaccard Index) | 0.4726 $\pm$ 0.2320 | **0.4754 $\pm$ 0.2344** | 0.4603 $\pm$ 0.2540 |
-| **Sensitivity** (Recall) | **0.6906 $\pm$ 0.3069** | 0.6824 $\pm$ 0.3117 | 0.5834 $\pm$ 0.3366 |
-| **Specificity** | 0.9999 $\pm$ 0.0002 | 0.9999 $\pm$ 0.0001 | **0.9999 $\pm$ 0.0000** |
-| **AUROC-ED** (Error Detection) $\uparrow$ | **0.9900** | 0.5000 | 0.9617 |
-| **ESCE** (Calibration Error) $\downarrow$ | 0.0012 | 0.0012 | **0.0006** (50% reduction) |
-| **Brier Score** $\downarrow$ | 0.0001 | 0.0001 | 0.0001 |
-| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.8715 | 0.8579 | 0.8596 (ranking comparable, n.s.) |
-| **E-AURC** (excess vs oracle) $\downarrow$ | 0.2547 | **0.2404** | 0.3269 |
+| **$\text{DSC}_{\text{pos}}$** (Positive Cases) | 0.2803 [0.264, 0.297] | 0.0176* [0.010, 0.027] | **0.3158** [0.292, 0.339] |
+| **$\text{DSC}_{\text{all}}$** (Overall Cohort) | 0.1112 [0.101, 0.122] | 0.7735* [0.756, 0.791] | **0.3275** [0.309, 0.346] |
+| **AUROC-ED** (Error Detection, global pixels) $\uparrow$ | **0.9936** | 0.9884 | 0.9929 |
+| **ESCE** (Calibration Error) $\downarrow$ | 0.00024 | 0.00015* | **0.00025** |
+| **Brier Score** $\downarrow$ | 0.00009 | 0.00008* | 0.00010 |
+| **AURC** (Risk-Coverage, standard) $\downarrow$ | 0.7687 | 0.1525* | **0.7100** |
 
-### Table 2: Clinical Selective Prediction & Referral Simulation (EXP-08)
+\*MC degenerate (near-empty masks); not wins. ens−det DSC_all Δ=+0.2163 [0.1989, 0.2352], Wilcoxon p=2.3e-96. See `results/P10_FINDINGS.md` — including the disclosed checkpoint-selection variance (same-seed DSC_pos 0.61→0.28 across selection rules).
+
+### Table 2: Clinical Selective Prediction & Referral Simulation (P10)
 | Strategy | AURC $\downarrow$ | Retained Dice @ 100% | Retained Dice @ 90% | Retained Dice @ 80% | Retained Dice @ 70% |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Random Referral** | 0.8629 | 0.1368 | 0.1367 | 0.1379 | 0.1382 |
-| **Deterministic Entropy** | 0.8715 | 0.1368 | 0.1383 | 0.1391 | 0.1348 |
-| **MC Dropout Variance** | 0.8579 | 0.1363 | 0.1358 | 0.1360 | 0.1351 |
-| **Deep Ensemble MutInfo** | 0.8596 | **0.1766** | **0.1733** | **0.1548** | **0.1493** |
+| **Random Referral** | 0.8888 | 0.1112 | 0.1112 | 0.1112 | 0.1112 |
+| **Deterministic Entropy** | 0.7687 | 0.1112 | 0.1142 | 0.1176 | 0.1222 |
+| **MC Dropout Variance*** | 0.1525 | 0.7735 | 0.7968 | 0.8122 | 0.8266 |
+| **Deep Ensemble MutInfo** | 0.7100 | **0.3275** | **0.3228** | **0.3061** | **0.2914** |
 
 ### Generated Publication Visualizations
-- **[Figure 1: Risk-Coverage Pareto Curves](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig1_risk_coverage_curves.png)**
-- **[Figure 2: Segmentation Calibration Reliability Diagrams](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig2_calibration_curves.png)**
-- **[Figure 3: AUROC Error Detection ROC Curves](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig3_auroc_error_detection.png)**
-- **[Figure 4: AP vs. PA Subgroup Performance](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig4_ap_vs_pa_subgroups.png)**
-- **[Figure 5: Qualitative Multi-Panel Uncertainty & Archetypes](file:///home/raju/AI-ML%20Projects/Pneumothorax%20segmentation/results/figures/fig5_qualitative_uncertainty_maps.png)**
+- **[Figure 1: Risk-Coverage Curves](docs/assets/fig1_risk_coverage_curves.png)**
+- **[Figure 2: AUROC Error Detection ROC](docs/assets/fig3_auroc_error_detection.png)**
+- **[Figure 3: AP vs. PA Subgroup Performance](docs/assets/fig4_ap_vs_pa_subgroups.png)**
+- **[Figure 4: Qualitative Multi-Panel Uncertainty & Archetypes](docs/assets/fig5_qualitative_uncertainty_maps.png)** (panels illustrative, pre-P10 checkpoints)
 
 ---
 
